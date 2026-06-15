@@ -1311,10 +1311,19 @@ def render_page_04(standalone=True):
     """, unsafe_allow_html=True)
 
     # 从Excel中读取重大融资信息（可选，文件不存在时跳过）
-    FINANCING_FILE = "重大融资信息.xlsx"  # 用户可上传到应用目录
+    # 优先从 session_state（上传的文件）读取，其次尝试本地文件
+    df_fin = None
     
-    if os.path.exists(FINANCING_FILE):
-        df_fin = pd.read_excel(FINANCING_FILE)
+    if st.session_state.get("financing_file_bytes") is not None:
+        try:
+            import io as _io
+            df_fin = pd.read_excel(_io.BytesIO(st.session_state.financing_file_bytes))
+        except Exception as e:
+            st.warning(f"⚠️ 读取重大融资信息失败: {e}")
+    elif os.path.exists("重大融资信息.xlsx"):
+        df_fin = pd.read_excel("重大融资信息.xlsx")
+    
+    if df_fin is not None and len(df_fin) > 0:
         
         # 解析"综合充足率变动"列，拆分为两列
         def parse_change(change_str):
@@ -1411,8 +1420,8 @@ def render_page_04(standalone=True):
         )
     
     else:
-        st.info("📁 未找到重大融资信息文件（重大融资信息.xlsx），跳过此部分。")
-        st.caption("如需显示重大融资信息，请将文件上传到应用目录。")
+        st.info("📁 未找到重大融资信息数据，跳过此部分。")
+        st.caption("💡 如需显示重大融资信息，请在左侧边栏「重大融资信息」处上传 Excel 文件。")
 
 
 
@@ -2287,6 +2296,11 @@ if "uploaded_file_name" not in st.session_state:
     st.session_state.uploaded_file_name = None
 if "available_quarters" not in st.session_state:
     st.session_state.available_quarters = []
+# 重大融资信息文件上传状态初始化
+if "financing_file_bytes" not in st.session_state:
+    st.session_state.financing_file_bytes = None
+if "financing_file_name" not in st.session_state:
+    st.session_state.financing_file_name = None
 
 # 检查是否已上传数据
 if st.session_state.uploaded_file_bytes is not None:
@@ -2375,11 +2389,34 @@ with st.sidebar:
             st.success(f"✅ 已上传：{uploaded_file.name}")
             st.rerun()
     
+    # ---- 重大融资信息文件上传（可选）----
+    if st.session_state.uploaded_file_name is not None:
+        st.divider()
+        st.markdown("#### 📁 重大融资信息（可选）")
+        financing_file = st.file_uploader(
+            "上传 重大融资信息.xlsx",
+            type=["xlsx"],
+            key="financing_uploader",
+            help="用于展示04页面的重大融资信息统计，非必须"
+        )
+        
+        if financing_file is not None:
+            if st.session_state.financing_file_name != financing_file.name:
+                st.session_state.financing_file_bytes = financing_file.read()
+                st.session_state.financing_file_name = financing_file.name
+                st.success(f"✅ 已上传：{financing_file.name}")
+                st.rerun()
+    
     # 显示已上传文件信息
     if st.session_state.uploaded_file_name is not None:
         st.info(f"📄 当前文件：{st.session_state.uploaded_file_name}")
         if len(st.session_state.available_quarters) > 0:
             st.caption(f"可用季度：{', '.join(st.session_state.available_quarters)}")
+        # 显示融资信息文件状态
+        if st.session_state.financing_file_name is not None:
+            st.success(f"📄 融资信息：{st.session_state.financing_file_name}")
+        else:
+            st.caption("💡 未上传重大融资信息 → 04页面将跳过")
         st.divider()
     
     # 用户信息
