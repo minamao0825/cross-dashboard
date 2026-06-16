@@ -81,7 +81,7 @@ section.main { background: #ffffff !important; }
 .metric-explain {
     background: #f8f9fa; border-left: 4px solid #0d5fa5;
     padding: 6px 12px; border-radius: 0 8px 8px 0;
-    margin: 6px 0; font-size: 0.8rem; color: #444; line-height: 1.5;
+    margin: 6px 0; font-size: 0.88rem; color: #444; line-height: 1.6;
 }
 /* 权限标签 */
 .role-badge-admin {
@@ -570,7 +570,7 @@ def render_page_02(standalone=True):
 
     st.markdown("""
     <div class="metric-explain">
-        <strong>指标说明：</strong><br>
+<br>
         • 大型公司和银行系的核心一级资本占比较为相似，55%至70%；<br>
         • 核心二级资本占比较高的公司，通常有优先股、财务再或保单盈余的影响。
     </div>
@@ -627,7 +627,7 @@ def render_page_02(standalone=True):
 
     st.markdown("""
     <div class="metric-explain">
-        <strong>指标说明：</strong><br>
+<br>
         • 大型公司的附属一级和二级资本占实际资本的比例相对其他类型公司，分布较为集中，中小型和养老健康类公司的占比较为分散；<br>
         • 附属二级资本占比较高的公司，考虑是否有财务再合同的影响及保单未来盈余的分布情况。
     </div>
@@ -690,7 +690,7 @@ def render_page_02(standalone=True):
 
     st.markdown(f"""
     <div class="metric-explain">
-        <strong>指标说明：</strong><br>
+<br>
         • 保单未来盈余是指保险公司现行有效寿险保单剩余期限所对应的当期确认的实际资本。<br>
         • 人身险行业本季度末有<strong>{over_40_count}家</strong>公司计入核心资本的保单未来盈余占核心资本的比例超过监管规定的40%的比例限制。
         另外，有<strong>{le_zero_count}家</strong>公司的保单未来盈余小于等于0%。
@@ -779,7 +779,7 @@ def render_page_02(standalone=True):
 
     st.markdown("""
     <div class="metric-explain">
-        <strong>指标说明：</strong><br>
+<br>
         • 多家公司未披露计入附属一级资本的保单未来盈余，因此附属一级资本中的保单未来盈余比例很多都是0%。
     </div>
     """, unsafe_allow_html=True)
