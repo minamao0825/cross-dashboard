@@ -544,7 +544,7 @@ def render_page_02(standalone=True):
         aff_pct  = ((df["附属一级资本"] + df["附属二级资本"]) / df["实际资本"]).median()
         st.markdown(f"""
         <div class="metric-explain">
-            <strong>指标说明：</strong><br>
+            <br>
             • <strong>核心资本</strong>是指在持续经营状态下和破产清算状态下均可以吸收损失的资本，<strong>附属资本</strong>是指在破产清算状态下可以吸收损失的资本；<br>
             • 行业平均核心资本占实际资本的比例约<strong>{core_pct*100:.0f}%</strong>，附属资本占比约<strong>{aff_pct*100:.0f}%</strong>。
         </div>
@@ -837,7 +837,7 @@ def render_page_02(standalone=True):
         st.markdown("#### 📊 保单未来盈余/保险合同负债（存量保单盈利能力）")
         st.markdown(f"""
         <div class="metric-explain">
-            <strong>指标说明：</strong><br>
+            <br>
             • 保单未来盈余/保险合同负债代表存量保单盈利能力，该指标越高代表公司长期负债盈利能力越强；<br>
             • 头部大型公司的存量保单盈利能力表现高于大部分的其他中小类型险企；<br>
             • 本季度末行业平均水平{avg_pfl*100:.1f}%。
