@@ -2411,6 +2411,58 @@ with st.sidebar:
             st.success(f"📄 融资信息：{st.session_state.financing_file_name}")
         else:
             st.caption("💡 未上传重大融资信息 → 04页面将跳过")
+        
+        # ---- 数据概览卡片 ----
+        st.markdown("##### 📊 数据概览")
+        try:
+            import io
+            import pandas as _pd
+            # 读取当前季度数据
+            _df_ov = get_df(st.session_state.uploaded_file_bytes, st.session_state.current_quarter)
+            if _df_ov is not None and len(_df_ov) > 0:
+                # 公司总数
+                _total_cos = len(_df_ov)
+                # 目标公司是否在列
+                _target_co = st.session_state.get("target_co", "")
+                _target_in = False
+                if _target_co and "公司名称" in _df_ov.columns:
+                    _target_in = _target_co in _df_ov["公司名称"].values
+                
+                # 卡片1：公司总数
+                st.markdown(f"""
+                <div style="background:#f0f4f8; border-radius:8px; padding:8px 12px; margin:4px 0; border-left:3px solid #0d5fa5;">
+                    <div style="font-size:0.7rem; color:#666;">公司总数</div>
+                    <div style="font-size:1.2rem; font-weight:700; color:#1A3A5C;">{_total_cos} 家</div>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                # 卡片2：季度数
+                st.markdown(f"""
+                <div style="background:#f0f4f8; border-radius:8px; padding:8px 12px; margin:4px 0; border-left:3px solid #0d5fa5;">
+                    <div style="font-size:0.7rem; color:#666;">可用季度</div>
+                    <div style="font-size:1.2rem; font-weight:700; color:#1A3A5C;">{len(st.session_state.available_quarters)} 个</div>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                # 卡片3：目标公司状态
+                if _target_co:
+                    if _target_in:
+                        st.markdown(f"""
+                        <div style="background:#e8f4fd; border-radius:8px; padding:8px 12px; margin:4px 0; border-left:3px solid #00b4d8;">
+                            <div style="font-size:0.7rem; color:#666;">目标公司</div>
+                            <div style="font-size:0.85rem; font-weight:600; color:#1a3a5c;">✅ {_target_co}</div>
+                        </div>
+                        """, unsafe_allow_html=True)
+                    else:
+                        st.markdown(f"""
+                        <div style="background:#fff3cd; border-radius:8px; padding:8px 12px; margin:4px 0; border-left:3px solid #ffc107;">
+                            <div style="font-size:0.7rem; color:#666;">目标公司</div>
+                            <div style="font-size:0.85rem; font-weight:600; color:#856404;">⚠️ {_target_co} 不在列</div>
+                        </div>
+                        """, unsafe_allow_html=True)
+        except Exception as _e:
+            pass
+        
         st.divider()
     
     # 用户信息
