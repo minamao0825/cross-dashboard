@@ -1595,7 +1595,7 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=360, target_co=N
                 showlegend=True,
             ))
 
-        # ---------- 目标公司高亮（圆点 + 文字，参照参考图） ----------
+        # ---------- 目标公司高亮（含光晕效果） ----------
         if target_co and len(target_co) > 0:
             t_mask = (co_names == target_co)
             if t_mask.any():
@@ -1610,6 +1610,14 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=360, target_co=N
                     t_color = stats[t_cat]['color']
                     display_y = min(t_val, y_max) if y_max is not None else t_val
                     lbl_t = f"{t_val*100:.1f}%" if pct_display else f"{t_val:.1f}%"
+                    # 光晕效果（大号半透明星星）
+                    fig.add_trace(go.Scatter(
+                        x=[t_idx], y=[display_y],
+                        mode="markers",
+                        marker=dict(size=22, color="#00BFFF", symbol="star", opacity=0.25),
+                        showlegend=False, hoverinfo="skip",
+                    ))
+                    # 主星星
                     fig.add_trace(go.Scatter(
                         x=[t_idx],
                         y=[display_y],
@@ -1617,7 +1625,7 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=360, target_co=N
                         marker=dict(size=16, color="#00BFFF", line=dict(color="#fff", width=1.5), symbol="star"),
                         text=[f"{target_co} {lbl_t}"],
                         textposition="top center",
-                        textfont=dict(size=11, color="#00BFFF", family="SimHei"),
+                        textfont=dict(size=10, color="#00BFFF", family="SimHei"),
                         showlegend=False,
                         hoverinfo="skip",
                     ))
@@ -1692,22 +1700,22 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=360, target_co=N
         x0 = x_center - BOX_W / 2
         x1 = x_center + BOX_W / 2
 
-        # 下 whisker
+        # 下 whisker（虚线，加粗至1.2px）
         fig.add_shape(type="line", x0=x_center, x1=x_center, y0=mn, y1=q1_v,
-                      line=dict(color=color, width=1, dash="dot"), layer="above")
+                      line=dict(color=color, width=1.2, dash="dot"), layer="above")
         fig.add_shape(type="line", x0=x_center-TICK_LEN, x1=x_center+TICK_LEN, y0=mn, y1=mn,
-                      line=dict(color=color, width=1.5), layer="above")
-        # 上 whisker
+                      line=dict(color=color, width=1.8), layer="above")
+        # 上 whisker（虚线，加粗至1.2px）
         fig.add_shape(type="line", x0=x_center, x1=x_center, y0=q3_v, y1=mx,
-                      line=dict(color=color, width=1, dash="dot"), layer="above")
+                      line=dict(color=color, width=1.2, dash="dot"), layer="above")
         fig.add_shape(type="line", x0=x_center-TICK_LEN, x1=x_center+TICK_LEN, y0=mx, y1=mx,
-                      line=dict(color=color, width=1.5), layer="above")
-        # 箱体
+                      line=dict(color=color, width=1.8), layer="above")
+        # 箱体（极浅蓝色调填充）
         fig.add_shape(type="rect", x0=x0, x1=x1, y0=q1_v, y1=q3_v,
-                      fillcolor="rgba(255,255,255,0.3)", line=dict(color=color, width=1.5), layer="above")
-        # 中位线
+                      fillcolor="rgba(245, 248, 255, 0.55)", line=dict(color=color, width=1.5), layer="above")
+        # 中位线（加粗至2.5px）
         fig.add_shape(type="line", x0=x0, x1=x1, y0=med_v, y1=med_v,
-                      line=dict(color=color, width=2), layer="above")
+                      line=dict(color=color, width=2.5), layer="above")
 
         # 标注已移除（不显示箱体内部数值）
 
@@ -1746,9 +1754,10 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=360, target_co=N
                 ))
 
         yaxis_cfg = dict(
-            gridcolor="#e0e0e0",
+            gridcolor="#f5f5f5",
             zeroline=False,
             title_font=dict(size=13, family="SimHei"),
+            tickfont=dict(size=10, family="SimHei"),
             tickformat=".0%" if pct_display else "",
         )
         if y_max is not None:
@@ -1846,6 +1855,16 @@ def capital_tier_boxplot(df, target_co=None, height=360):
         fig.add_shape(type="line", x0=x0, x1=x1, y0=med, y1=med,
                       line=dict(color=color, width=2.5), layer="above")
 
+        # 均值标记（菱形，半透明）
+        mean_val = float(sr.mean())
+        fig.add_trace(go.Scatter(
+            x=[x_center], y=[mean_val],
+            mode="markers",
+            marker=dict(size=7, color=color, symbol="diamond",
+                       line=dict(color="#fff", width=1), opacity=0.7),
+            showlegend=False, hoverinfo="skip",
+        ))
+
         # 中位数标注（箱体内部）
         fig.add_annotation(x=x_center, y=med, text=f"{med*100:.0f}%",
                            showarrow=False, font=dict(size=10, color=color, family="SimHei"))
@@ -1877,18 +1896,26 @@ def capital_tier_boxplot(df, target_co=None, height=360):
                                  marker=dict(size=10, color=color, symbol="square"),
                                  name=label, showlegend=True))
 
-        # 目标公司高亮
+        # 目标公司高亮（含光晕效果）
         if target_co and len(target_co) > 0:
             t_mask = (df["公司"] == target_co)
             if t_mask.any():
                 t_val = float(df.loc[t_mask, col].iloc[0])
+                # 光晕效果（大号半透明星星）
+                fig.add_trace(go.Scatter(
+                    x=[x_center], y=[t_val],
+                    mode="markers",
+                    marker=dict(size=22, color="#00BFFF", symbol="star", opacity=0.25),
+                    showlegend=False, hoverinfo="skip",
+                ))
+                # 主星星
                 fig.add_trace(go.Scatter(
                     x=[x_center], y=[t_val],
                     mode="markers+text",
                     marker=dict(size=16, color="#00BFFF", line=dict(color="#fff", width=1.5), symbol="star"),
                     text=[f"{target_co} {t_val*100:.0f}%"],
                     textposition="top center",
-                    textfont=dict(size=10, color="#00BFFF", family="SimHei"),  # 目标公司标签10px
+                    textfont=dict(size=10, color="#00BFFF", family="SimHei"),
                     showlegend=False, hoverinfo="skip",
                 ))
 
