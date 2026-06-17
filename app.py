@@ -2242,7 +2242,6 @@ if not st.session_state.logged_in:
         with st.form("login_form"):
             username = st.text_input("用户名", value="admin", key="login_user")
             password = st.text_input("密码", type="password", value="", key="login_pwd")
-            ai_key_in = st.text_input("阿里云百炼 API Key（可选）", type="password", key="login_ai")
             submitted = st.form_submit_button("登录", use_container_width=True)
 
             if submitted:
@@ -2252,7 +2251,6 @@ if not st.session_state.logged_in:
                     st.session_state.logged_in  = True
                     st.session_state.username   = username
                     st.session_state.user_role   = "admin" if username in ADMIN_USERS else "user"
-                    st.session_state.ai_api_key  = ai_key_in
                     st.rerun()
 
     st.markdown('</div>', unsafe_allow_html=True)
@@ -2411,58 +2409,6 @@ with st.sidebar:
             st.success(f"📄 融资信息：{st.session_state.financing_file_name}")
         else:
             st.caption("💡 未上传重大融资信息 → 04页面将跳过")
-        
-        # ---- 数据概览卡片 ----
-        st.markdown("##### 📊 数据概览")
-        try:
-            import io
-            import pandas as _pd
-            # 读取当前季度数据
-            _df_ov = get_df(st.session_state.uploaded_file_bytes, st.session_state.current_quarter)
-            if _df_ov is not None and len(_df_ov) > 0:
-                # 公司总数
-                _total_cos = len(_df_ov)
-                # 目标公司是否在列
-                _target_co = st.session_state.get("target_co", "")
-                _target_in = False
-                if _target_co and "公司名称" in _df_ov.columns:
-                    _target_in = _target_co in _df_ov["公司名称"].values
-                
-                # 卡片1：公司总数
-                st.markdown(f"""
-                <div style="background:#f0f4f8; border-radius:8px; padding:8px 12px; margin:4px 0; border-left:3px solid #0d5fa5;">
-                    <div style="font-size:0.7rem; color:#666;">公司总数</div>
-                    <div style="font-size:1.2rem; font-weight:700; color:#1A3A5C;">{_total_cos} 家</div>
-                </div>
-                """, unsafe_allow_html=True)
-                
-                # 卡片2：季度数
-                st.markdown(f"""
-                <div style="background:#f0f4f8; border-radius:8px; padding:8px 12px; margin:4px 0; border-left:3px solid #0d5fa5;">
-                    <div style="font-size:0.7rem; color:#666;">可用季度</div>
-                    <div style="font-size:1.2rem; font-weight:700; color:#1A3A5C;">{len(st.session_state.available_quarters)} 个</div>
-                </div>
-                """, unsafe_allow_html=True)
-                
-                # 卡片3：目标公司状态
-                if _target_co:
-                    if _target_in:
-                        st.markdown(f"""
-                        <div style="background:#e8f4fd; border-radius:8px; padding:8px 12px; margin:4px 0; border-left:3px solid #00b4d8;">
-                            <div style="font-size:0.7rem; color:#666;">目标公司</div>
-                            <div style="font-size:0.85rem; font-weight:600; color:#1a3a5c;">✅ {_target_co}</div>
-                        </div>
-                        """, unsafe_allow_html=True)
-                    else:
-                        st.markdown(f"""
-                        <div style="background:#fff3cd; border-radius:8px; padding:8px 12px; margin:4px 0; border-left:3px solid #ffc107;">
-                            <div style="font-size:0.7rem; color:#666;">目标公司</div>
-                            <div style="font-size:0.85rem; font-weight:600; color:#856404;">⚠️ {_target_co} 不在列</div>
-                        </div>
-                        """, unsafe_allow_html=True)
-        except Exception as _e:
-            pass
-        
         st.divider()
     
     # 用户信息
@@ -2474,24 +2420,6 @@ with st.sidebar:
         st.session_state.username  = ""
         st.session_state.user_role  = None
         st.rerun()
-    st.divider()
-
-    # AI 配置
-    st.markdown("#### 🤖 AI 辅助分析")
-    ai_api_key = st.text_input(
-        "阿里云百炼 API Key",
-        value=st.session_state.ai_api_key,
-        type="password",
-        key="ai_key_input"
-    )
-    ai_model = st.selectbox(
-        "AI 模型",
-        ["qwen-plus", "qwen-max", "qwen-turbo"],
-        index=0,
-        key="ai_model_select"
-    )
-    st.session_state.ai_api_key = ai_api_key
-    st.session_state.ai_model   = ai_model
     st.divider()
 
     # 数据期间（从上传文件的Sheet列表中选择）
