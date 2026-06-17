@@ -22,6 +22,7 @@ from docx import Document
 from docx.shared import Pt, RGBColor, Inches
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 import base64
+import time
 
 # PDF生成相关库
 from reportlab.lib.pagesizes import A4
@@ -1422,6 +1423,7 @@ def render_page_04(standalone=True):
 
 
 
+@st.cache_data
 def boxplot_with_annotations(df, indicator, yaxis_title, height=360, target_co=None, y_multiplier=1.0, group_by_category=False, y_min=0, y_max=None, pct_display=False, dtick=None):
     """
     画箱型图（完全自定义绘制，参照参考图风格）
@@ -1796,6 +1798,7 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=360, target_co=N
     return fig
 
 
+@st.cache_data
 def capital_tier_boxplot(df, target_co=None, height=360):
     """
     资本分级行业分布箱线图（02页面专用）
@@ -1943,6 +1946,7 @@ def capital_tier_boxplot(df, target_co=None, height=360):
     )
     return fig
 
+@st.cache_data
 def mc_composition_boxplot(df, indicators, denominator_col, target_co=None, height=360):
     """
     最低资本构成分布箱型图（03页面专用）
@@ -2396,20 +2400,30 @@ with st.sidebar:
     if uploaded_file is not None:
         # 检查是否是新上传的文件
         if st.session_state.uploaded_file_name != uploaded_file.name:
+            # 显示上传进度条
+            progress_bar = st.progress(0, text="正在读取文件...")
+            
             # 读取文件内容
             file_bytes = uploaded_file.read()
+            progress_bar.progress(30, text="正在解析季度信息...")
+            
             st.session_state.uploaded_file_bytes = file_bytes
             st.session_state.uploaded_file_name = uploaded_file.name
             
             # 获取所有季度（Sheet名称）
             available_quarters = get_available_quarters(file_bytes)
+            progress_bar.progress(70, text="正在加载季度数据...")
+            
             st.session_state.available_quarters = available_quarters
             
             # 设置默认季度为第一个Sheet
             if len(available_quarters) > 0:
                 st.session_state.current_quarter = available_quarters[0]
             
+            progress_bar.progress(100, text="上传完成！")
             st.success(f"✅ 已上传：{uploaded_file.name}")
+            time.sleep(0.5)
+            progress_bar.empty()
             st.rerun()
     
     # ---- 重大融资信息文件上传（可选）----
@@ -2425,9 +2439,18 @@ with st.sidebar:
         
         if financing_file is not None:
             if st.session_state.financing_file_name != financing_file.name:
+                # 显示上传进度条
+                progress_bar = st.progress(0, text="正在读取融资信息文件...")
+                
                 st.session_state.financing_file_bytes = financing_file.read()
+                progress_bar.progress(50, text="正在处理...")
+                
                 st.session_state.financing_file_name = financing_file.name
+                progress_bar.progress(100, text="上传完成！")
+                
                 st.success(f"✅ 已上传：{financing_file.name}")
+                time.sleep(0.5)
+                progress_bar.empty()
                 st.rerun()
     
     # 显示已上传文件信息
