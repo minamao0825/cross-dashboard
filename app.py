@@ -733,7 +733,7 @@ def render_page_02(standalone=True):
             plot_bgcolor="white", paper_bgcolor="white",
             yaxis_title="公司数量",
             yaxis=dict(gridcolor="#e0e0e0", zeroline=False, title_font=dict(size=13, family="SimHei")),
-            xaxis=dict(tickfont=dict(size=11, family="SimHei"), tickangle=-15),
+            xaxis=dict(tickfont=dict(size=10, family="SimHei"), tickangle=-15),  # X轴刻度10px
             bargap=0.3,
         )
         st.plotly_chart(fig_bar, use_container_width=True)
@@ -1886,7 +1886,7 @@ def capital_tier_boxplot(df, target_co=None, height=360):
                     marker=dict(size=16, color="#00BFFF", line=dict(color="#fff", width=1.5), symbol="star"),
                     text=[f"{target_co} {t_val*100:.0f}%"],
                     textposition="top center",
-                    textfont=dict(size=11, color="#00BFFF", family="SimHei"),
+                    textfont=dict(size=10, color="#00BFFF", family="SimHei"),  # 目标公司标签10px
                     showlegend=False, hoverinfo="skip",
                 ))
 
@@ -1897,7 +1897,8 @@ def capital_tier_boxplot(df, target_co=None, height=360):
         font=dict(family="SimHei, Microsoft YaHei, sans-serif"),
         yaxis_title="占实际资本比例",
         yaxis=dict(gridcolor="#e0e0e0", zeroline=False, range=[-0.02, 1.05],
-                   tickformat=".0%", title_font=dict(size=12, family="SimHei")),
+                   tickformat=".0%", title_font=dict(size=13, family="SimHei"),  # Y轴标题13px
+                   tickfont=dict(size=10, family="SimHei")),  # Y轴刻度10px
         xaxis=dict(tickmode="array", tickvals=list(range(len(tiers))),
                    ticktext=[t[0] for t in tiers], tickfont=dict(size=10, family="SimHei"),
                    showgrid=False, range=[-0.5, len(tiers)-0.8]),
@@ -2096,6 +2097,7 @@ def mc_composition_boxplot(df, indicators, denominator_col, target_co=None, heig
             gridcolor="#e0e0e0",
             zeroline=False,
             title_font=dict(size=13, family="SimHei"),
+            tickfont=dict(size=10, family="SimHei"),  # Y轴刻度10px
             range=[Y_MIN, Y_MAX],
         ),
         xaxis=dict(
