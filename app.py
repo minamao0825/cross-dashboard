@@ -54,14 +54,25 @@ st.markdown("""
 <style>
 /* 登录页 */
 .login-container {
-    max-width: 480px; margin: 60px auto; padding: 40px 36px;
-    background: transparent; border-radius: 16px;
-    box-shadow: none;
+    max-width: 480px; margin: 60px auto; padding: 48px 40px;
+    background: rgba(255,255,255,0.06); border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.1);
 }
-.login-title { text-align:center; font-size:3.2rem !important; font-weight:800 !important; margin-bottom:8px !important; background: linear-gradient(90deg, #ffffff, #00d4ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: 2px; }
+.login-title { text-align:center; font-size:3.4rem !important; font-weight:800 !important; margin-bottom:12px !important; background: linear-gradient(135deg, #00d4ff, #0099cc, #00ff88); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: 3px; filter: drop-shadow(0 0 20px rgba(0,212,255,0.4)); }
 .login-sub  { text-align:center; font-size:0.82rem !important; color:#a0c4ff !important; margin-bottom:32px !important; letter-spacing: 4px; text-transform: uppercase; }
 .login-btn   { background:linear-gradient(135deg,#1a3a5c,#0d5fa5) !important; color:white !important;
                  border-radius:8px !important; font-size:1rem !important; padding:10px 0 !important; }
+.login-logo {
+    width: 80px; height: 80px; border-radius: 50%;
+    background: linear-gradient(135deg, #0d5fa5, #00b4d8);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 24px auto;
+    box-shadow: 0 4px 20px rgba(0,212,255,0.35);
+    color: white; font-size: 1.8rem; font-weight: 700;
+    letter-spacing: 2px;
+}
 /* 主界面 */
 section.main { background: #ffffff !important; }
 .main-header {
@@ -2267,7 +2278,18 @@ if not st.session_state.logged_in:
     }
     </style>
     """, unsafe_allow_html=True)
+
+    # 背景装饰元素（径向渐变）
+    st.markdown("""
+    <div style="position:fixed; top:0; left:0; width:100%; height:100%;
+         background: radial-gradient(circle at 20% 30%, rgba(0,212,255,0.08) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 70%, rgba(13,95,165,0.08) 0%, transparent 50%);
+         z-index:-1; pointer-events:none;"></div>
+    """, unsafe_allow_html=True)
+
     st.markdown('<div class="login-container">', unsafe_allow_html=True)
+    # 添加 Logo
+    st.markdown('<div class="login-logo">寿研</div>', unsafe_allow_html=True)
     st.markdown('<p class="login-title">寿研数智<br>偿付能力季报分享平台</p>', unsafe_allow_html=True)
     st.markdown('<p class="login-sub">ACTUARIAL INTELLIGENCE</p>', unsafe_allow_html=True)
 
