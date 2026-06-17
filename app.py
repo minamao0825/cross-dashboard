@@ -447,7 +447,7 @@ def render_page_01(standalone=True):
         if has_c:
             fig_box = boxplot_with_annotations(
                 df, COMP_PCT, yaxis_title="综合偿付能力充足率(%)",
-                height=360, target_co=target_co, y_multiplier=1.0,
+                height=300, target_co=target_co, y_multiplier=1.0,
                 group_by_category=True, y_max=450
             )
             if fig_box:
@@ -466,7 +466,7 @@ def render_page_01(standalone=True):
         if has_k:
             fig_box_k = boxplot_with_annotations(
                 df, CORE_PCT, yaxis_title="核心偿付能力充足率(%)",
-                height=360, target_co=target_co, y_multiplier=1.0,
+                height=300, target_co=target_co, y_multiplier=1.0,
                 group_by_category=True, y_max=450
             )
             if fig_box_k:
@@ -500,7 +500,7 @@ def render_page_01(standalone=True):
             fig_box_core_reg = boxplot_with_annotations(
                 df, "核心资本/注册资本",
                 yaxis_title="核心资本/注册资本率",
-                height=360, target_co=target_co, y_multiplier=1.0,
+                height=300, target_co=target_co, y_multiplier=1.0,
                 group_by_category=True, y_min=-1, y_max=30, pct_display=True, dtick=5
             )
             if fig_box_core_reg:
@@ -520,7 +520,7 @@ def render_page_01(standalone=True):
             fig_box_ac_aa = boxplot_with_annotations(
                 df, "实际资本/认可资产",
                 yaxis_title="实际资本/认可资产率",
-                height=360, target_co=target_co, y_multiplier=1.0,
+                height=300, target_co=target_co, y_multiplier=1.0,
                 group_by_category=True, y_max=0.6, pct_display=True
             )
             if fig_box_ac_aa:
@@ -552,7 +552,7 @@ def render_page_02(standalone=True):
 
         # 资本分级行业分布箱线图
         st.markdown("##### 📈 资本分级行业分布情况")
-        fig_cap = capital_tier_boxplot(df, target_co=target_co, height=360)
+        fig_cap = capital_tier_boxplot(df, target_co=target_co, height=300)
         fig_cap.update_layout(margin=dict(r=110))
         fig_cap.update_xaxes(range=[-0.5, 3.8])
         if fig_cap:
@@ -590,7 +590,7 @@ def render_page_02(standalone=True):
         fig_core1 = boxplot_with_annotations(
             df, "核心一级资本占比",
             yaxis_title="核心一级资本占比",
-            height=360, target_co=target_co, y_multiplier=1.0,
+            height=300, target_co=target_co, y_multiplier=1.0,
             group_by_category=True, y_min=0.3, y_max=1.0, pct_display=True
         )
         if fig_core1:
@@ -608,7 +608,7 @@ def render_page_02(standalone=True):
         fig_core2 = boxplot_with_annotations(
             df, "核心二级资本占比",
             yaxis_title="核心二级资本占比",
-            height=360, target_co=target_co, y_multiplier=1.0,
+            height=300, target_co=target_co, y_multiplier=1.0,
             group_by_category=True, y_max=0.3, pct_display=True
         )
         if fig_core2:
@@ -646,7 +646,7 @@ def render_page_02(standalone=True):
         fig_aff1 = boxplot_with_annotations(
             df, "附属一级资本占比",
             yaxis_title="附属一级资本占比",
-            height=360, target_co=target_co, y_multiplier=1.0,
+            height=300, target_co=target_co, y_multiplier=1.0,
             group_by_category=True, y_max=0.5, pct_display=True
         )
         if fig_aff1:
@@ -664,7 +664,7 @@ def render_page_02(standalone=True):
         fig_aff2 = boxplot_with_annotations(
             df, "附属二级资本占比",
             yaxis_title="附属二级资本占比",
-            height=360, target_co=target_co, y_multiplier=1.0,
+            height=300, target_co=target_co, y_multiplier=1.0,
             group_by_category=True, y_max=0.15, pct_display=True
         )
         if fig_aff2:
@@ -755,7 +755,7 @@ def render_page_02(standalone=True):
         fig_pfl_box = boxplot_with_annotations(
             df, "计入核心资本的保单未来盈余占比",
             yaxis_title="计入核心资本的保单未来盈余占比",
-            height=360, target_co=target_co, y_multiplier=1.0,
+            height=300, target_co=target_co, y_multiplier=1.0,
             group_by_category=True, y_min=-0.3, y_max=0.7, pct_display=True
         )
         if fig_pfl_box:
@@ -795,7 +795,7 @@ def render_page_02(standalone=True):
         fig_tier1 = boxplot_with_annotations(
             df, "核心一级资本中的保单未来盈余占比",
             yaxis_title="核心一级资本中的保单未来盈余比例",
-            height=360, target_co=target_co, y_multiplier=1.0,
+            height=300, target_co=target_co, y_multiplier=1.0,
             group_by_category=True, y_min=-0.4, y_max=0.8, pct_display=True
         )
         if fig_tier1:
@@ -813,7 +813,7 @@ def render_page_02(standalone=True):
         fig_tier2 = boxplot_with_annotations(
             df, "附属一级资本中保单未来盈余占比",
             yaxis_title="附属一级资本中的保单未来盈余比例",
-            height=360, target_co=target_co, y_multiplier=1.0,
+            height=300, target_co=target_co, y_multiplier=1.0,
             group_by_category=True, y_min=-0.2, y_max=1.0, pct_display=True
         )
         if fig_tier2:
@@ -850,7 +850,7 @@ def render_page_02(standalone=True):
         fig_pfl = boxplot_with_annotations(
             df, "保单未来盈余/保险合同负债",
             yaxis_title="保单未来盈余/保险合同负债",
-            height=360, target_co=target_co, y_multiplier=1.0,
+            height=300, target_co=target_co, y_multiplier=1.0,
             group_by_category=True, y_min=-0.1, y_max=0.3, pct_display=True
         )
         fig_pfl.update_layout(margin=dict(r=150))
@@ -892,7 +892,7 @@ def render_page_03(standalone=True):
                     values=list(sums.values()),
                     color_discrete_sequence=["#185FA5","#2E7AD6","#EF9F27","#1D9E75"]
                 )
-                fig_pie.update_layout(height=360, margin=dict(l=0,r=0,t=10,b=0))
+                fig_pie.update_layout(height=300, margin=dict(l=0,r=0,t=10,b=0))
                 st.plotly_chart(fig_pie, use_container_width=True)
 
         with col_box:
@@ -948,7 +948,7 @@ def render_page_03(standalone=True):
             fig_life = boxplot_with_annotations(
                 df, "寿险业务保险风险最低资本合计/最低资本",
                 "寿险业务保险风险最低资本占比",
-                height=360, target_co=target_co,
+                height=300, target_co=target_co,
                 group_by_category=True, y_min=0, y_max=0.8, pct_display=True
             )
             if fig_life:
@@ -968,7 +968,7 @@ def render_page_03(standalone=True):
             fig_nonlife = boxplot_with_annotations(
                 df, "非寿险业务保险风险最低资本合计/最低资本",
                 "非寿险业务保险风险最低资本占比",
-                height=360, target_co=target_co,
+                height=300, target_co=target_co,
                 group_by_category=True, y_min=0, y_max=0.08, pct_display=True
             )
             if fig_nonlife:
@@ -1000,7 +1000,7 @@ def render_page_03(standalone=True):
             fig_market = boxplot_with_annotations(
                 df, "市场风险-最低资本合计/最低资本",
                 "市场风险最低资本占比",
-                height=360, target_co=target_co,
+                height=300, target_co=target_co,
                 group_by_category=True, y_min=0.2, y_max=1.2, pct_display=True
             )
             if fig_market:
@@ -1020,7 +1020,7 @@ def render_page_03(standalone=True):
             fig_credit = boxplot_with_annotations(
                 df, "信用风险-最低资本合计/最低资本",
                 "信用风险最低资本占比",
-                height=360, target_co=target_co,
+                height=300, target_co=target_co,
                 group_by_category=True, y_min=0, y_max=1.0, pct_display=True
             )
             if fig_credit:
@@ -1054,7 +1054,7 @@ def render_page_03(standalone=True):
             fig_rate = boxplot_with_annotations(
                 df, "利率风险/认可资产",
                 "利率风险/认可资产率",
-                height=360, target_co=target_co,
+                height=300, target_co=target_co,
                 group_by_category=True, y_min=0, y_max=0.1, pct_display=True
             )
             if fig_rate:
@@ -1074,7 +1074,7 @@ def render_page_03(standalone=True):
             fig_equity = boxplot_with_annotations(
                 df, "权益价格风险/认可资产",
                 "权益价格风险/认可资产率",
-                height=360, target_co=target_co,
+                height=300, target_co=target_co,
                 group_by_category=True, y_min=0, y_max=0.1, pct_display=True
             )
             if fig_equity:
@@ -1107,7 +1107,7 @@ def render_page_03(standalone=True):
             fig_spread = boxplot_with_annotations(
                 df, "利差风险/认可资产",
                 "利差风险/认可资产率",
-                height=360, target_co=target_co,
+                height=300, target_co=target_co,
                 group_by_category=True, y_min=0, y_max=0.04, pct_display=True
             )
             if fig_spread:
@@ -1127,7 +1127,7 @@ def render_page_03(standalone=True):
             fig_default = boxplot_with_annotations(
                 df, "对手违约风险/认可资产",
                 "对手违约风险/认可资产率",
-                height=360, target_co=target_co,
+                height=300, target_co=target_co,
                 group_by_category=True, y_min=0, y_max=0.04, pct_display=True
             )
             if fig_default:
@@ -1195,7 +1195,7 @@ def render_page_03(standalone=True):
             fig_disp = boxplot_with_annotations(
                 df, "量化风险分散效应/最低资本",
                 "风险分散效应最低资本占比",
-                height=360, target_co=target_co,
+                height=300, target_co=target_co,
                 group_by_category=True, y_min=-0.6, y_max=0.0, pct_display=True
             )
             if fig_disp:
@@ -1215,7 +1215,7 @@ def render_page_03(standalone=True):
             fig_absrp = boxplot_with_annotations(
                 df, "特定类别保险合同损失吸收效应/最低资本",
                 "损失吸收效应最低资本占比",
-                height=360, target_co=target_co,
+                height=300, target_co=target_co,
                 group_by_category=True, y_min=-0.5, y_max=0.1, pct_display=True
             )
             if fig_absrp:
@@ -1265,7 +1265,7 @@ def render_page_03(standalone=True):
             fig_life_stress = boxplot_with_annotations(
                 df, "寿险业务保险风险最低资本合计/认可负债",
                 "保险风险（寿）/认可负债率",
-                height=360, target_co=target_co,
+                height=300, target_co=target_co,
                 group_by_category=True, y_min=0, y_max=0.2, pct_display=True
             )
             if fig_life_stress:
@@ -1285,7 +1285,7 @@ def render_page_03(standalone=True):
             fig_nonlife_stress = boxplot_with_annotations(
                 df, "非寿险业务保险风险最低资本合计/认可负债",
                 "保险风险（非寿）/认可负债率",
-                height=360, target_co=target_co,
+                height=300, target_co=target_co,
                 group_by_category=True, y_min=0, y_max=0.01, pct_display=True
             )
             if fig_nonlife_stress:
@@ -1424,7 +1424,7 @@ def render_page_04(standalone=True):
 
 
 @st.cache_data
-def boxplot_with_annotations(df, indicator, yaxis_title, height=360, target_co=None, y_multiplier=1.0, group_by_category=False, y_min=0, y_max=None, pct_display=False, dtick=None):
+def boxplot_with_annotations(df, indicator, yaxis_title, height=300, target_co=None, y_multiplier=1.0, group_by_category=False, y_min=0, y_max=None, pct_display=False, dtick=None):
     """
     画箱型图（完全自定义绘制，参照参考图风格）
     - 使用 add_shape + add_annotation 手动绘制
@@ -1799,7 +1799,7 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=360, target_co=N
 
 
 @st.cache_data
-def capital_tier_boxplot(df, target_co=None, height=360):
+def capital_tier_boxplot(df, target_co=None, height=300):
     """
     资本分级行业分布箱线图（02页面专用）
     - 展示核心一级/二级、附属一级/二级资本占实际资本的比例分布
@@ -1947,7 +1947,7 @@ def capital_tier_boxplot(df, target_co=None, height=360):
     return fig
 
 @st.cache_data
-def mc_composition_boxplot(df, indicators, denominator_col, target_co=None, height=360):
+def mc_composition_boxplot(df, indicators, denominator_col, target_co=None, height=300):
     """
     最低资本构成分布箱型图（03页面专用）
     - 固定为全行业汇总展示，不随公司类型筛选变化
