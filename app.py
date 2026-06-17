@@ -1507,50 +1507,51 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=360, target_co=N
             mn = s['min_val']
             mx = s['max_val']
 
-            # ---- 1) 下 whisker（虚线）----
+            # ---- 1) 下 whisker（虚线，加粗至1.2px）----
             fig.add_shape(
                 type="line",
                 x0=x_center, x1=x_center, y0=mn, y1=q1,
-                line=dict(color=c, width=1, dash="dot"),
+                line=dict(color=c, width=1.2, dash="dot"),
                 layer="above",
             )
-            # 下 whisker 末端小横线
+            # 下 whisker 末端小横线（加粗至1.8px）
             fig.add_shape(
                 type="line",
                 x0=x_center - TICK_LEN, x1=x_center + TICK_LEN, y0=mn, y1=mn,
-                line=dict(color=c, width=1.5),
+                line=dict(color=c, width=1.8),
                 layer="above",
             )
 
-            # ---- 2) 上 whisker（虚线）----
+            # ---- 2) 上 whisker（虚线，加粗至1.2px）----
             fig.add_shape(
                 type="line",
                 x0=x_center, x1=x_center, y0=q3, y1=mx,
-                line=dict(color=c, width=1, dash="dot"),
+                line=dict(color=c, width=1.2, dash="dot"),
                 layer="above",
             )
-            # 上 whisker 末端小横线
+            # 上 whisker 末端小横线（加粗至1.8px）
             fig.add_shape(
                 type="line",
                 x0=x_center - TICK_LEN, x1=x_center + TICK_LEN, y0=mx, y1=mx,
-                line=dict(color=c, width=1.5),
+                line=dict(color=c, width=1.8),
                 layer="above",
             )
 
-            # ---- 3) 箱体（空心矩形）----
+            # ---- 3) 箱体（极浅蓝色调填充）----
+            # 使用统一的极浅填充色，保留分类边框颜色
             fig.add_shape(
                 type="rect",
                 x0=x0, x1=x1, y0=q1, y1=q3,
-                fillcolor="rgba(255,255,255,0.3)",
+                fillcolor="rgba(245, 248, 255, 0.55)",
                 line=dict(color=c, width=1.5),
                 layer="above",
             )
 
-            # ---- 4) 中位线（水平实线）----
+            # ---- 4) 中位线（水平实线，加粗至2.5px）----
             fig.add_shape(
                 type="line",
                 x0=x0, x1=x1, y0=med, y1=med,
-                line=dict(color=c, width=2),
+                line=dict(color=c, width=2.5),
                 layer="above",
             )
 
@@ -1623,9 +1624,10 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=360, target_co=N
 
         # ---------- 布局 ----------
         yaxis_cfg = dict(
-            gridcolor="#e0e0e0",
+            gridcolor="#f5f5f5",
             zeroline=False,
             title_font=dict(size=13, family="SimHei"),
+            tickfont=dict(size=10, family="SimHei"),
             tickformat=".0%" if pct_display or (y_multiplier == 1.0 and vals.max() < 2) else "",
         )
         if y_max is not None:
@@ -1827,22 +1829,22 @@ def capital_tier_boxplot(df, target_co=None, height=360):
         x0 = x_center - BOX_W / 2
         x1 = x_center + BOX_W / 2
 
-        # 下 whisker（虚线）
+        # 下 whisker（虚线，加粗至1.2px）
         fig.add_shape(type="line", x0=x_center, x1=x_center, y0=mn, y1=q1,
-                      line=dict(color=color, width=1, dash="dot"), layer="above")
+                      line=dict(color=color, width=1.2, dash="dot"), layer="above")
         fig.add_shape(type="line", x0=x_center-TICK_LEN, x1=x_center+TICK_LEN, y0=mn, y1=mn,
-                      line=dict(color=color, width=1.5), layer="above")
-        # 上 whisker（虚线）
+                      line=dict(color=color, width=1.8), layer="above")
+        # 上 whisker（虚线，加粗至1.2px）
         fig.add_shape(type="line", x0=x_center, x1=x_center, y0=q3, y1=mx,
-                      line=dict(color=color, width=1, dash="dot"), layer="above")
+                      line=dict(color=color, width=1.2, dash="dot"), layer="above")
         fig.add_shape(type="line", x0=x_center-TICK_LEN, x1=x_center+TICK_LEN, y0=mx, y1=mx,
-                      line=dict(color=color, width=1.5), layer="above")
-        # 箱体（空心）
+                      line=dict(color=color, width=1.8), layer="above")
+        # 箱体（极浅蓝色调填充）
         fig.add_shape(type="rect", x0=x0, x1=x1, y0=q1, y1=q3,
-                      fillcolor="rgba(255,255,255,0.3)", line=dict(color=color, width=1.5), layer="above")
-        # 中位线
+                      fillcolor="rgba(245, 248, 255, 0.55)", line=dict(color=color, width=1.5), layer="above")
+        # 中位线（加粗至2.5px）
         fig.add_shape(type="line", x0=x0, x1=x1, y0=med, y1=med,
-                      line=dict(color=color, width=2), layer="above")
+                      line=dict(color=color, width=2.5), layer="above")
 
         # 中位数标注（箱体内部）
         fig.add_annotation(x=x_center, y=med, text=f"{med*100:.0f}%",
@@ -1896,7 +1898,7 @@ def capital_tier_boxplot(df, target_co=None, height=360):
         plot_bgcolor="white", paper_bgcolor="white",
         font=dict(family="SimHei, Microsoft YaHei, sans-serif"),
         yaxis_title="占实际资本比例",
-        yaxis=dict(gridcolor="#e0e0e0", zeroline=False, range=[-0.02, 1.05],
+        yaxis=dict(gridcolor="#f5f5f5", zeroline=False, range=[-0.02, 1.05],
                    tickformat=".0%", title_font=dict(size=13, family="SimHei"),  # Y轴标题13px
                    tickfont=dict(size=10, family="SimHei")),  # Y轴刻度10px
         xaxis=dict(tickmode="array", tickvals=list(range(len(tiers))),
