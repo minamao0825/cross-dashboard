@@ -2337,7 +2337,7 @@ if not st.session_state.logged_in:
         box-shadow: 0 6px 28px rgba(13,95,165,0.55) !important;
         transform: translateY(-1px) !important;
     }
-    /* 隐藏 Streamlit 默认的表单边框，限制表单宽度 */
+    /* 隐藏 Streamlit 默认的表单边框，限制表单宽度并居中 */
     [data-testid="stForm"],
     [data-test-id="stForm"] {
         background: transparent !important;
@@ -2345,11 +2345,20 @@ if not st.session_state.logged_in:
         box-shadow: none !important;
         padding: 0 !important;
         max-width: 380px;
+        margin: 0 auto !important;
     }
-    /* 限制输入框容器宽度 */
+    /* 限制输入框容器宽度并居中 */
     [data-testid="stTextInput"],
     [data-test-id="stTextInput"] {
         max-width: 340px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+    /* 登录按钮居中 */
+    [data-testid="stForm"] button[kind="formSubmit"],
+    [data-test-id="stForm"] button[kind="formSubmit"] {
+        margin-left: auto !important;
+        margin-right: auto !important;
     }
     </style>
     """, unsafe_allow_html=True)
