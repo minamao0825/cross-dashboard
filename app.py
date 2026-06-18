@@ -54,25 +54,12 @@ st.markdown("""
 <style>
 /* 登录页 */
 .login-container {
-    max-width: 480px; margin: 60px auto; padding: 48px 40px;
-    background: rgba(255,255,255,0.06); border-radius: 20px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.35);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255,255,255,0.1);
+    max-width: 480px; margin: 60px auto; padding: 40px 36px;
+    background: transparent; border-radius: 0;
+    box-shadow: none;
 }
-.login-title { text-align:center; font-size:3.4rem !important; font-weight:800 !important; margin-bottom:12px !important; background: linear-gradient(135deg, #00d4ff, #0099cc, #00ff88); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: 3px; filter: drop-shadow(0 0 20px rgba(0,212,255,0.4)); }
+.login-title { text-align:center; font-size:3.2rem !important; font-weight:800 !important; margin-bottom:8px !important; background: linear-gradient(90deg, #ffffff, #00d4ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: 2px; }
 .login-sub  { text-align:center; font-size:0.82rem !important; color:#a0c4ff !important; margin-bottom:32px !important; letter-spacing: 4px; text-transform: uppercase; }
-.login-btn   { background:linear-gradient(135deg,#1a3a5c,#0d5fa5) !important; color:white !important;
-                 border-radius:8px !important; font-size:1rem !important; padding:10px 0 !important; }
-.login-logo {
-    width: 80px; height: 80px; border-radius: 50%;
-    background: linear-gradient(135deg, #0d5fa5, #00b4d8);
-    display: flex; align-items: center; justify-content: center;
-    margin: 0 auto 24px auto;
-    box-shadow: 0 4px 20px rgba(0,212,255,0.35);
-    color: white; font-size: 1.8rem; font-weight: 700;
-    letter-spacing: 2px;
-}
 /* 主界面 */
 section.main { background: #ffffff !important; }
 .main-header {
@@ -2253,62 +2240,101 @@ def init_login_state():
 init_login_state()
 
 if not st.session_state.logged_in:
-    # 登录页专用样式：覆盖表单标签、输入框、按钮为浅色，并设置深蓝背景
+    # 登录页专用样式：参考深蓝渐变背景 + 现代表单
     st.markdown("""
     <style>
-    /* 登录页背景 */
-    .stApp { background: #050b14 !important; }
-    /* 登录页表单标签 */
+    /* 登录页整体背景：深蓝渐变 */
+    .stApp {
+        background: linear-gradient(135deg, #0a1628 0%, #0d2137 50%, #0a1628 100%) !important;
+        min-height: 100vh;
+    }
+    /* 隐藏顶部栏和侧边栏 */
+    #stApp [data-testid="stToolbar"],
+    [data-testid="stSidebar"] { display: none !important; }
+    /* 主内容区居中 */
+    .main > div { padding-top: 0; }
+
+    /* 表单标签：青色高亮 */
     [data-testid="stForm"] label,
-    [data-testid="stTextInput"] label,
-    [data-testid="stTextInput"] > div > label,
-    [data-baseweb="input"] label {
-        color: #e0e0e0 !important;
+    [data-testid="stTextInput"] > label,
+    [data-testid="stTextInput"] > div > label {
+        color: #00d4ff !important;
+        font-weight: 600 !important;
+        font-size: 0.95rem !important;
+        margin-bottom: 4px !important;
     }
-    /* 登录页输入框 */
-    [data-testid="stTextInput"] input,
-    [data-baseweb="input"] input {
-        color: #333333 !important;
+    /* 输入框容器：圆角、半透明深色背景 */
+    [data-testid="stTextInput"] {
+        background: transparent !important;
     }
-    /* 登录页按钮 */
+    /* 输入框本身 */
+    [data-testid="stTextInput"] input {
+        background: rgba(255,255,255,0.95) !important;
+        color: #1a1a2e !important;
+        border: 1px solid rgba(255,255,255,0.15) !important;
+        border-radius: 8px !important;
+        padding: 12px 16px !important;
+        font-size: 0.95rem !important;
+        transition: all 0.3s ease !important;
+    }
+    [data-testid="stTextInput"] input:focus {
+        border-color: #00b4d8 !important;
+        box-shadow: 0 0 0 2px rgba(0,180,216,0.25) !important;
+    }
+    /* 输入框占位符颜色 */
+    [data-testid="stTextInput"] input::placeholder {
+        color: #999 !important;
+    }
+
+    /* 登录按钮：醒目蓝色渐变全宽 */
     [data-testid="stForm"] button[kind="formSubmit"] {
-        background: linear-gradient(135deg,#0d5fa5,#00b4d8) !important;
+        background: linear-gradient(135deg, #0d5fa5, #00b4d8) !important;
         color: white !important;
         border: none !important;
+        border-radius: 10px !important;
+        font-size: 1.05rem !important;
+        font-weight: 600 !important;
+        padding: 14px 24px !important;
+        margin-top: 16px !important;
+        box-shadow: 0 4px 20px rgba(13,95,165,0.4) !important;
+        transition: all 0.3s ease !important;
     }
+    [data-testid="stForm"] button[kind="formSubmit"]:hover {
+        background: linear-gradient(135deg, #0e6bb8, #14c5e8) !important;
+        box-shadow: 0 6px 28px rgba(13,95,165,0.55) !important;
+        transform: translateY(-1px) !important;
+    }
+
+    /* 隐藏 Streamlit 默认的表单边框和内边距 */
+    [data-testid="stForm"] {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+    }
+
+    /* 错误消息样式优化 */
+    .stAlert { margin-top: 8px !important; }
     </style>
     """, unsafe_allow_html=True)
 
-    # 背景装饰元素（径向渐变）
-    st.markdown("""
-    <div style="position:fixed; top:0; left:0; width:100%; height:100%;
-         background: radial-gradient(circle at 20% 30%, rgba(0,212,255,0.08) 0%, transparent 50%),
-                    radial-gradient(circle at 80% 70%, rgba(13,95,165,0.08) 0%, transparent 50%);
-         z-index:-1; pointer-events:none;"></div>
-    """, unsafe_allow_html=True)
-
     st.markdown('<div class="login-container">', unsafe_allow_html=True)
-    # 添加 Logo
-    st.markdown('<div class="login-logo">寿研</div>', unsafe_allow_html=True)
     st.markdown('<p class="login-title">寿研数智<br>偿付能力季报分享平台</p>', unsafe_allow_html=True)
     st.markdown('<p class="login-sub">ACTUARIAL INTELLIGENCE</p>', unsafe_allow_html=True)
 
-    # 使用三列布局缩窄表单宽度
-    left_spacer, form_col, right_spacer = st.columns([1, 2, 1])
-    with form_col:
-        with st.form("login_form"):
-            username = st.text_input("用户名", value="admin", key="login_user")
-            password = st.text_input("密码", type="password", value="", key="login_pwd")
-            submitted = st.form_submit_button("登录", use_container_width=True)
+    with st.form("login_form"):
+        username = st.text_input("用户名", value="admin", key="login_user")
+        password = st.text_input("密码", type="password", value="", key="login_pwd")
+        submitted = st.form_submit_button("登 录", use_container_width=True)
 
-            if submitted:
-                if password != LOGIN_PASSWORD:
-                    st.error("密码错误，请联系管理员。")
-                else:
-                    st.session_state.logged_in  = True
-                    st.session_state.username   = username
-                    st.session_state.user_role   = "admin" if username in ADMIN_USERS else "user"
-                    st.rerun()
+        if submitted:
+            if password != LOGIN_PASSWORD:
+                st.error("⚠️ 密码错误，请联系管理员。")
+            else:
+                st.session_state.logged_in  = True
+                st.session_state.username   = username
+                st.session_state.user_role   = "admin" if username in ADMIN_USERS else "user"
+                st.rerun()
 
     st.markdown('</div>', unsafe_allow_html=True)
     st.stop()
