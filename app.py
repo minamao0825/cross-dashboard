@@ -135,15 +135,16 @@ section[data-test-id="stSidebar"] .stMultiSelect [data-baseweb="tag"] { font-siz
         margin-left: 0 !important;
     }
 
-    /* 强制分页：section-break 在打印时生效 */
+    /* 强制分页：确保16:9横版一页显示2个图表 */
     .section-break {
         page-break-before: auto !important;
-        page-break-after: auto !important;
+        page-break-after: always !important;
         break-before: auto !important;
-        break-after: auto !important;
+        break-after: always !important;
         height: 0 !important;
         margin: 0 !important;
         border: none !important;
+        padding: 0 !important;
     }
 
     /* 避免图表、表格、指标卡片被截断 */
@@ -2245,78 +2246,98 @@ def init_login_state():
 init_login_state()
 
 if not st.session_state.logged_in:
-    # 登录页样式：简洁白色背景
+    # 登录页专用样式：V10.3原始版本（深蓝背景）
     st.markdown("""
     <style>
-    /* 登录页整体背景：白色 */
-    .stApp {
-        background: #ffffff !important;
+    /* 登录页背景：深蓝色 */
+    .stApp { 
+        background: #050b14 !important; 
         min-height: 100vh;
     }
     /* 隐藏顶部栏和侧边栏 */
-    #stApp [data-test-id="stToolbar"],
-    [data-test-id="stSidebar"] { display: none !important; }
+    [data-testid="stToolbar"],
+    [data-test-id="stSidebar"],
+    header { 
+        display: none !important; 
+    }
     /* 主内容区居中 */
     .main > div { padding-top: 0; }
     
     /* 登录容器 */
     .login-container {
-        max-width: 400px;
-        margin: 100px auto;
-        padding: 40px;
-        background: #ffffff;
-        border-radius: 12px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        max-width: 420px;
+        margin: 80px auto;
+        padding: 40px 36px;
+        background: rgba(255,255,255,0.06);
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.08);
     }
     .login-title {
         text-align: center;
-        font-size: 2.2rem !important;
-        font-weight: 700 !important;
-        color: #1a3a5c !important;
+        font-size: 3.2rem !important;
+        font-weight: 800 !important;
         margin-bottom: 8px !important;
+        background: linear-gradient(90deg, #ffffff, #00d4ff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        letter-spacing: 2px;
     }
     .login-sub {
         text-align: center;
         font-size: 0.82rem !important;
-        color: #666 !important;
+        color: #a0c4ff !important;
         margin-bottom: 32px !important;
-        letter-spacing: 2px;
+        letter-spacing: 4px;
     }
-    /* 表单标签 */
-    [data-test-id="stForm"] label {
-        color: #1a3a5c !important;
+    /* 表单标签：浅色 */
+    [data-testid="stForm"] label,
+    [data-testid="stTextInput"] label,
+    [data-testid="stTextInput"] > div > label,
+    [data-baseweb="input"] label {
+        color: #e0e0e0 !important;
         font-weight: 600 !important;
         font-size: 0.9rem !important;
     }
-    /* 输入框 */
-    [data-test-id="stTextInput"] input {
-        background: #f8f9fa !important;
-        border: 1px solid #ddd !important;
+    /* 输入框：深色背景 */
+    [data-testid="stTextInput"] input,
+    [data-baseweb="input"] input {
+        background: rgba(255,255,255,0.95) !important;
+        color: #333333 !important;
+        border: 1px solid rgba(255,255,255,0.15) !important;
         border-radius: 8px !important;
         padding: 12px 16px !important;
         font-size: 0.95rem !important;
     }
-    [data-test-id="stTextInput"] input:focus {
-        border-color: #0d5fa5 !important;
-        box-shadow: 0 0 0 2px rgba(13,95,165,0.2) !important;
+    [data-testid="stTextInput"] input:focus,
+    [data-baseweb="input"] input:focus {
+        border-color: #00b4d8 !important;
+        box-shadow: 0 0 0 2px rgba(0,180,216,0.25) !important;
     }
-    /* 登录按钮：简洁蓝色 */
+    /* 登录按钮：蓝色渐变 */
+    [data-testid="stForm"] button[kind="formSubmit"],
     [data-test-id="stForm"] button[kind="formSubmit"] {
-        background: #0d5fa5 !important;
+        background: linear-gradient(135deg,#0d5fa5,#00b4d8) !important;
         color: white !important;
         border: none !important;
-        border-radius: 8px !important;
-        font-size: 1rem !important;
+        border-radius: 10px !important;
+        font-size: 1.05rem !important;
         font-weight: 600 !important;
-        padding: 12px 24px !important;
+        padding: 14px 24px !important;
         margin-top: 16px !important;
+        box-shadow: 0 4px 20px rgba(13,95,165,0.4) !important;
         transition: all 0.3s ease !important;
     }
+    [data-testid="stForm"] button[kind="formSubmit"]:hover,
     [data-test-id="stForm"] button[kind="formSubmit"]:hover {
-        background: #0e6bb8 !important;
-        box-shadow: 0 4px 12px rgba(13,95,165,0.3) !important;
+        background: linear-gradient(135deg,#0e6bb8,#14c5e8) !important;
+        box-shadow: 0 6px 28px rgba(13,95,165,0.55) !important;
+        transform: translateY(-1px) !important;
     }
     /* 隐藏 Streamlit 默认的表单边框 */
+    [data-testid="stForm"],
     [data-test-id="stForm"] {
         background: transparent !important;
         border: none !important;
