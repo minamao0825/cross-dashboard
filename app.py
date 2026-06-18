@@ -2300,7 +2300,7 @@ if not st.session_state.logged_in:
         font-weight: 600 !important;
         font-size: 0.9rem !important;
     }
-    /* 输入框：白色背景，限制最大宽度 */
+    /* 输入框：白色背景，撑满表单 */
     [data-testid="stTextInput"] input,
     [data-baseweb="input"] input {
         background: rgba(255,255,255,0.95) !important;
@@ -2309,16 +2309,13 @@ if not st.session_state.logged_in:
         border-radius: 8px !important;
         padding: 10px 14px !important;
         font-size: 0.95rem !important;
-        max-width: 340px !important;
     }
     [data-testid="stTextInput"] input:focus,
     [data-baseweb="input"] input:focus {
         border-color: #00b4d8 !important;
         box-shadow: 0 0 0 2px rgba(0,180,216,0.25) !important;
     }
-    /* 登录按钮：蓝色渐变，与输入框同宽 */
-    [data-testid="stForm"] > div > div > div > button[kind="formSubmit"],
-    [data-test-id="stForm"] > div > div > div > button[kind="formSubmit"],
+    /* 登录按钮：蓝色渐变，撑满表单宽度 */
     [data-testid="stForm"] button[kind="formSubmit"],
     [data-test-id="stForm"] button[kind="formSubmit"] {
         background: linear-gradient(135deg,#0d5fa5,#00b4d8) !important;
@@ -2329,12 +2326,6 @@ if not st.session_state.logged_in:
         font-weight: 600 !important;
         padding: 12px 24px !important;
         margin-top: 16px !important;
-        margin-left: 0 !important;
-        margin-right: 0 !important;
-        max-width: none !important;
-        width: 100% !important;
-        display: block !important;
-        box-sizing: border-box !important;
         box-shadow: 0 4px 20px rgba(13,95,165,0.4) !important;
         transition: all 0.3s ease !important;
     }
@@ -2344,30 +2335,22 @@ if not st.session_state.logged_in:
         box-shadow: 0 6px 28px rgba(13,95,165,0.55) !important;
         transform: translateY(-1px) !important;
     }
-    /* 隐藏 Streamlit 默认的表单边框，限制表单宽度并居中 */
+    /* 隐藏 Streamlit 默认的表单边框，固定表单宽度并居中 */
     [data-testid="stForm"],
     [data-test-id="stForm"] {
         background: transparent !important;
         border: none !important;
         box-shadow: none !important;
         padding: 0 !important;
-        max-width: 380px;
+        width: 340px !important;
+        max-width: 340px !important;
         margin: 0 auto !important;
     }
-    /* 限制输入框容器宽度并居中 */
-    [data-testid="stTextInput"],
-    [data-test-id="stTextInput"],
-    [data-testid="stFormSubmitButton"],
-    [data-test-id="stFormSubmitButton"] {
-        max-width: 340px !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
+    /* 表单内所有元素（输入框、按钮容器）统一撑满表单宽度 */
+    [data-testid="stForm"] > div > div,
+    [data-test-id="stForm"] > div > div {
         width: 100% !important;
-    }
-    /* 登录按钮容器：确保撑满 */
-    [data-testid="stFormSubmitButton"] button,
-    [data-test-id="stFormSubmitButton"] button {
-        width: 100% !important;
+        max-width: 100% !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -2382,7 +2365,7 @@ if not st.session_state.logged_in:
         with st.form("login_form"):
             username = st.text_input("用户名", value="admin", key="login_user")
             password = st.text_input("密码", type="password", value="", key="login_pwd")
-            submitted = st.form_submit_button("登 录")
+            submitted = st.form_submit_button("登 录", use_container_width=True)
 
             if submitted:
                 if password != LOGIN_PASSWORD:
