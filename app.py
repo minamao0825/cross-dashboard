@@ -2317,6 +2317,8 @@ if not st.session_state.logged_in:
         box-shadow: 0 0 0 2px rgba(0,180,216,0.25) !important;
     }
     /* 登录按钮：蓝色渐变，与输入框同宽 */
+    [data-testid="stForm"] > div > div > div > button[kind="formSubmit"],
+    [data-test-id="stForm"] > div > div > div > button[kind="formSubmit"],
     [data-testid="stForm"] button[kind="formSubmit"],
     [data-test-id="stForm"] button[kind="formSubmit"] {
         background: linear-gradient(135deg,#0d5fa5,#00b4d8) !important;
@@ -2327,10 +2329,12 @@ if not st.session_state.logged_in:
         font-weight: 600 !important;
         padding: 12px 24px !important;
         margin-top: 16px !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
         max-width: none !important;
         width: 100% !important;
+        display: block !important;
+        box-sizing: border-box !important;
         box-shadow: 0 4px 20px rgba(13,95,165,0.4) !important;
         transition: all 0.3s ease !important;
     }
@@ -2352,16 +2356,18 @@ if not st.session_state.logged_in:
     }
     /* 限制输入框容器宽度并居中 */
     [data-testid="stTextInput"],
-    [data-test-id="stTextInput"] {
+    [data-test-id="stTextInput"],
+    [data-testid="stFormSubmitButton"],
+    [data-test-id="stFormSubmitButton"] {
         max-width: 340px !important;
         margin-left: auto !important;
         margin-right: auto !important;
+        width: 100% !important;
     }
-    /* 登录按钮居中 */
-    [data-testid="stForm"] button[kind="formSubmit"],
-    [data-test-id="stForm"] button[kind="formSubmit"] {
-        margin-left: auto !important;
-        margin-right: auto !important;
+    /* 登录按钮容器：确保撑满 */
+    [data-testid="stFormSubmitButton"] button,
+    [data-test-id="stFormSubmitButton"] button {
+        width: 100% !important;
     }
     </style>
     """, unsafe_allow_html=True)
