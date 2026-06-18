@@ -2316,7 +2316,7 @@ if not st.session_state.logged_in:
         border-color: #00b4d8 !important;
         box-shadow: 0 0 0 2px rgba(0,180,216,0.25) !important;
     }
-    /* 登录按钮：蓝色渐变，限制宽度 */
+    /* 登录按钮：蓝色渐变，与输入框同宽 */
     [data-testid="stForm"] button[kind="formSubmit"],
     [data-test-id="stForm"] button[kind="formSubmit"] {
         background: linear-gradient(135deg,#0d5fa5,#00b4d8) !important;
@@ -2327,7 +2327,10 @@ if not st.session_state.logged_in:
         font-weight: 600 !important;
         padding: 12px 24px !important;
         margin-top: 16px !important;
-        max-width: 340px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        max-width: none !important;
+        width: 100% !important;
         box-shadow: 0 4px 20px rgba(13,95,165,0.4) !important;
         transition: all 0.3s ease !important;
     }
