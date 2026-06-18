@@ -2263,16 +2263,15 @@ if not st.session_state.logged_in:
     /* 主内容区居中 */
     .main > div { padding-top: 0; }
     
-    /* 登录容器 */
+    /* 登录容器 - 无背景无边框 */
     .login-container {
         max-width: 420px;
-        margin: 80px auto;
-        padding: 40px 36px;
-        background: rgba(255,255,255,0.06);
-        border-radius: 16px;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255,255,255,0.08);
+        margin: 60px auto;
+        padding: 0;
+        background: transparent;
+        border-radius: 0;
+        box-shadow: none;
+        border: none;
     }
     .login-title {
         text-align: center;
@@ -2301,22 +2300,23 @@ if not st.session_state.logged_in:
         font-weight: 600 !important;
         font-size: 0.9rem !important;
     }
-    /* 输入框：深色背景 */
+    /* 输入框：白色背景，限制最大宽度 */
     [data-testid="stTextInput"] input,
     [data-baseweb="input"] input {
         background: rgba(255,255,255,0.95) !important;
         color: #333333 !important;
         border: 1px solid rgba(255,255,255,0.15) !important;
         border-radius: 8px !important;
-        padding: 12px 16px !important;
+        padding: 10px 14px !important;
         font-size: 0.95rem !important;
+        max-width: 340px !important;
     }
     [data-testid="stTextInput"] input:focus,
     [data-baseweb="input"] input:focus {
         border-color: #00b4d8 !important;
         box-shadow: 0 0 0 2px rgba(0,180,216,0.25) !important;
     }
-    /* 登录按钮：蓝色渐变 */
+    /* 登录按钮：蓝色渐变，限制宽度 */
     [data-testid="stForm"] button[kind="formSubmit"],
     [data-test-id="stForm"] button[kind="formSubmit"] {
         background: linear-gradient(135deg,#0d5fa5,#00b4d8) !important;
@@ -2325,8 +2325,9 @@ if not st.session_state.logged_in:
         border-radius: 10px !important;
         font-size: 1.05rem !important;
         font-weight: 600 !important;
-        padding: 14px 24px !important;
+        padding: 12px 24px !important;
         margin-top: 16px !important;
+        max-width: 340px !important;
         box-shadow: 0 4px 20px rgba(13,95,165,0.4) !important;
         transition: all 0.3s ease !important;
     }
@@ -2336,13 +2337,19 @@ if not st.session_state.logged_in:
         box-shadow: 0 6px 28px rgba(13,95,165,0.55) !important;
         transform: translateY(-1px) !important;
     }
-    /* 隐藏 Streamlit 默认的表单边框 */
+    /* 隐藏 Streamlit 默认的表单边框，限制表单宽度 */
     [data-testid="stForm"],
     [data-test-id="stForm"] {
         background: transparent !important;
         border: none !important;
         box-shadow: none !important;
         padding: 0 !important;
+        max-width: 380px;
+    }
+    /* 限制输入框容器宽度 */
+    [data-testid="stTextInput"],
+    [data-test-id="stTextInput"] {
+        max-width: 340px !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -2351,12 +2358,15 @@ if not st.session_state.logged_in:
     st.markdown('<p class="login-title">寿研数智<br>偿付能力季报分享平台</p>', unsafe_allow_html=True)
     st.markdown('<p class="login-sub">ACTUARIAL INTELLIGENCE</p>', unsafe_allow_html=True)
 
-    with st.form("login_form"):
-        username = st.text_input("用户名", value="admin", key="login_user")
-        password = st.text_input("密码", type="password", value="", key="login_pwd")
-        submitted = st.form_submit_button("登 录", use_container_width=True)
+    # 用三列布局限制表单宽度并居中
+    _, form_col, _ = st.columns([1, 2, 1])
+    with form_col:
+        with st.form("login_form"):
+            username = st.text_input("用户名", value="admin", key="login_user")
+            password = st.text_input("密码", type="password", value="", key="login_pwd")
+            submitted = st.form_submit_button("登 录")
 
-        if submitted:
+            if submitted:
             if password != LOGIN_PASSWORD:
                 st.error("⚠️ 密码错误，请联系管理员。")
             else:
