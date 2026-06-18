@@ -2367,13 +2367,13 @@ if not st.session_state.logged_in:
             submitted = st.form_submit_button("登 录")
 
             if submitted:
-            if password != LOGIN_PASSWORD:
-                st.error("⚠️ 密码错误，请联系管理员。")
-            else:
-                st.session_state.logged_in  = True
-                st.session_state.username   = username
-                st.session_state.user_role   = "admin" if username in ADMIN_USERS else "user"
-                st.rerun()
+                if password != LOGIN_PASSWORD:
+                    st.error("⚠️ 密码错误，请联系管理员。")
+                else:
+                    st.session_state.logged_in  = True
+                    st.session_state.username   = username
+                    st.session_state.user_role   = "admin" if username in ADMIN_USERS else "user"
+                    st.rerun()
 
     st.markdown('</div>', unsafe_allow_html=True)
     st.stop()
