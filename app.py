@@ -603,7 +603,7 @@ def render_page_02(standalone=True):
             range_max = df.loc[mask_top, "核心一级资本占比"].max() * 100
             core1_desc = f"{top1_cat}和{top2_cat}的核心一级资本占比较为相似，{range_min:.0f}%至{range_max:.0f}%"
         else:
-            core1_desc = f"{top1_cat}和{top2_cat}的核心一级资本占比较为相似，{top1_val:.0f}%至{top2_val:.0f}%"
+            core1_desc = f"{top1_cat}和{top2_cat}的核心一级资本占比较为相似，{min(top1_val, top2_val):.0f}%至{max(top1_val, top2_val):.0f}%"
     elif len(sorted_cats) == 1:
         top_cat, top_val = sorted_cats[0]
         core1_desc = f"{top_cat}的核心一级资本占比较高，约{top_val:.0f}%"
@@ -698,7 +698,9 @@ def render_page_02(standalone=True):
     if len(sorted_aff1) >= 2:
         top1_cat, top1_val = sorted_aff1[0]
         top2_cat, top2_val = sorted_aff1[1]
-        aff1_desc = f"{top1_cat}和{top2_cat}的附属一级资本占比相对较高（中位数约{top1_val:.0f}%~{top2_val:.0f}%），其他类型公司占比较低且分布较为分散"
+        aff1_lo = min(top1_val, top2_val)
+        aff1_hi = max(top1_val, top2_val)
+        aff1_desc = f"{top1_cat}和{top2_cat}的附属一级资本占比相对较高（中位数约{aff1_lo:.0f}%~{aff1_hi:.0f}%），其他类型公司占比较低且分布较为分散"
     elif len(sorted_aff1) == 1:
         aff1_desc = f"{sorted_aff1[0][0]}的附属一级资本占比相对较高（中位数约{sorted_aff1[0][1]:.0f}%）"
     else:
