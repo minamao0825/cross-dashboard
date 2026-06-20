@@ -572,10 +572,56 @@ def render_page_02(standalone=True):
     df["核心一级资本占比"] = df["核心一级资本"] / df["实际资本"]
     df["核心二级资本占比"] = df["核心二级资本"] / df["实际资本"]
 
-    st.markdown("""
+    # 动态生成核心资本占比分布情况的说明文字
+    comp_cats = st.session_state.get("comp_cats", {})
+    fixed_cat_order = ["大型公司", "中型公司", "小型公司", "银行系", "外资系", "养老健康"]
+    
+    # 计算各分类的核心一级/二级资本占比中位数
+    cat_core1_medians = {}
+    cat_core2_medians = {}
+    for cat_name in fixed_cat_order:
+        if cat_name not in comp_cats:
+            continue
+        cat_cos = comp_cats[cat_name]
+        mask_cat = df["公司"].isin(cat_cos)
+        if not mask_cat.any():
+            continue
+        cat_core1_medians[cat_name] = df.loc[mask_cat, "核心一级资本占比"].median() * 100
+        cat_core2_medians[cat_name] = df.loc[mask_cat, "核心二级资本占比"].median() * 100
+    
+    # 找出核心一级资本占比最高的两个分类
+    sorted_cats = sorted(cat_core1_medians.items(), key=lambda x: x[1], reverse=True)
+    
+    # 构建动态说明文字
+    if len(sorted_cats) >= 2:
+        top1_cat, top1_val = sorted_cats[0]
+        top2_cat, top2_val = sorted_cats[1]
+        # 取这两个分类的合并范围
+        mask_top = (df["公司"].isin(comp_cats.get(top1_cat, []))) | (df["公司"].isin(comp_cats.get(top2_cat, [])))
+        if mask_top.any():
+            range_min = df.loc[mask_top, "核心一级资本占比"].min() * 100
+            range_max = df.loc[mask_top, "核心一级资本占比"].max() * 100
+            core1_desc = f"{top1_cat}和{top2_cat}的核心一级资本占比较为相似，{range_min:.0f}%至{range_max:.0f}%"
+        else:
+            core1_desc = f"{top1_cat}和{top2_cat}的核心一级资本占比较为相似，{top1_val:.0f}%至{top2_val:.0f}%"
+    elif len(sorted_cats) == 1:
+        top_cat, top_val = sorted_cats[0]
+        core1_desc = f"{top_cat}的核心一级资本占比较高，约{top_val:.0f}%"
+    else:
+        core1_desc = "各公司类型的核心一级资本占比存在差异"
+    
+    # 核心二级资本：找出占比最高的分类
+    sorted_c2 = sorted(cat_core2_medians.items(), key=lambda x: x[1], reverse=True)
+    if len(sorted_c2) >= 1:
+        high_cat, high_val = sorted_c2[0]
+        core2_desc = f"{high_cat}等类型的公司核心二级资本占比相对较高（中位数约{high_val:.0f}%），通常有优先股、财务再或保单盈余的影响。"
+    else:
+        core2_desc = "核心二级资本占比较高的公司，通常有优先股、财务再或保单盈余的影响。"
+
+    st.markdown(f"""
     <div class="metric-explain">
-        • 大型公司和银行系的核心一级资本占比较为相似，55%至70%；<br>
-        • 核心二级资本占比较高的公司，通常有优先股、财务再或保单盈余的影响。
+        • {core1_desc}；<br>
+        • {core2_desc}
     </div>
     """, unsafe_allow_html=True)
 
