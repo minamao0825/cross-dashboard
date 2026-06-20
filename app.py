@@ -431,7 +431,7 @@ def render_page_01(standalone=True):
 
     # 偿付能力充足率整体分布情况（统一标题 + 两列并排）
     st.markdown("#### 📊 偿付能力充足率整体分布情况")
-    st.markdown("""
+    st.markdown(f"""
     <div style="font-size:1.05rem; color:#444; margin: 4px 0 12px 0; line-height:1.5;">
         我国{len(df)}家人身险公司的综合及核心偿付能力充足率呈现较为集中的分布，将人身险公司按照特征类型及认可资产规模进行分类，六大类公司的充足率分布如下图。
     </div>
