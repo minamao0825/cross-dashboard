@@ -674,10 +674,48 @@ def render_page_02(standalone=True):
     df["附属一级资本占比"] = df["附属一级资本"] / df["实际资本"]
     df["附属二级资本占比"] = df["附属二级资本"] / df["实际资本"]
 
-    st.markdown("""
+    # 动态生成附属资本占比分布情况的说明文字
+    comp_cats = st.session_state.get("comp_cats", {})
+    fixed_cat_order = ["大型公司", "中型公司", "小型公司", "银行系", "外资系", "养老健康"]
+    
+    # 计算各分类的附属一级/二级资本占比中位数
+    cat_aff1_medians = {}
+    cat_aff2_medians = {}
+    for cat_name in fixed_cat_order:
+        if cat_name not in comp_cats:
+            continue
+        cat_cos = comp_cats[cat_name]
+        mask_cat = df["公司"].isin(cat_cos)
+        if not mask_cat.any():
+            continue
+        if "附属一级资本占比" in df.columns:
+            cat_aff1_medians[cat_name] = df.loc[mask_cat, "附属一级资本占比"].median() * 100
+        if "附属二级资本占比" in df.columns:
+            cat_aff2_medians[cat_name] = df.loc[mask_cat, "附属二级资本占比"].median() * 100
+    
+    # 附属一级资本：找出占比最高的分类
+    sorted_aff1 = sorted(cat_aff1_medians.items(), key=lambda x: x[1], reverse=True)
+    if len(sorted_aff1) >= 2:
+        top1_cat, top1_val = sorted_aff1[0]
+        top2_cat, top2_val = sorted_aff1[1]
+        aff1_desc = f"{top1_cat}和{top2_cat}的附属一级资本占比相对较高（中位数约{top1_val:.0f}%~{top2_val:.0f}%），其他类型公司占比较低且分布较为分散"
+    elif len(sorted_aff1) == 1:
+        aff1_desc = f"{sorted_aff1[0][0]}的附属一级资本占比相对较高（中位数约{sorted_aff1[0][1]:.0f}%）"
+    else:
+        aff1_desc = "各公司类型的附属一级资本占比分布存在差异"
+    
+    # 附属二级资本：找出占比最高的分类
+    sorted_aff2 = sorted(cat_aff2_medians.items(), key=lambda x: x[1], reverse=True)
+    if len(sorted_aff2) >= 1:
+        high_cat, high_val = sorted_aff2[0]
+        aff2_desc = f"{high_cat}等类型的公司附属二级资本占比相对较高（中位数约{high_val:.0f}%），考虑是否有财务再合同的影响及保单未来盈余的分布情况。"
+    else:
+        aff2_desc = "附属二级资本占比较高的公司，考虑是否有财务再合同的影响及保单未来盈余的分布情况。"
+
+    st.markdown(f"""
     <div class="metric-explain">
-        • 大型公司的附属一级和二级资本占实际资本的比例相对其他类型公司，分布较为集中，中小型和养老健康类公司的占比较为分散；<br>
-        • 附属二级资本占比较高的公司，考虑是否有财务再合同的影响及保单未来盈余的分布情况。
+        • {aff1_desc}；<br>
+        • {aff2_desc}
     </div>
     """, unsafe_allow_html=True)
 
@@ -919,9 +957,34 @@ def render_page_03(standalone=True):
         st.markdown('<div style="page-break-after: always;"></div>', unsafe_allow_html=True)
     st.markdown(f"### ⚠️ 03 · 最低资本数据对比分析 · {q_label}")
 
-    st.markdown("""
+    # 动态生成最低资本数据对比分析的说明文字
+    risk_medians = {}
+    for risk_name, col in [("保险风险", "寿险业务保险风险最低资本合计/最低资本"),
+                           ("市场风险", "市场风险-最低资本合计/最低资本"),
+                           ("信用风险", "信用风险-最低资本合计/最低资本")]:
+        if col in df.columns:
+            med = df[col].median() * 100
+            if pd.notna(med):
+                risk_medians[risk_name] = med
+
+    if len(risk_medians) >= 2:
+        sorted_risk = sorted(risk_medians.items(), key=lambda x: x[1], reverse=True)
+        top_risk, top_val = sorted_risk[0]
+        insurance_val = risk_medians.get("保险风险", 0)
+        credit_val = risk_medians.get("信用风险", 0)
+        if insurance_val > credit_val:
+            risk_desc = f"人身险行业本季度末最低资本以{top_risk}为主（中位数约{top_val:.0f}%），保险风险平均占比高于信用风险"
+        else:
+            risk_desc = f"人身险行业本季度末最低资本以{top_risk}为主（中位数约{top_val:.0f}%）"
+    elif len(risk_medians) == 1:
+        top_risk, top_val = list(risk_medians.items())[0]
+        risk_desc = f"人身险行业本季度末最低资本以{top_risk}为主（中位数约{top_val:.0f}%）"
+    else:
+        risk_desc = "人身险行业最低资本构成数据暂不可用"
+
+    st.markdown(f"""
     <div class="metric-explain">
-        • 人身险行业本季度末最低资本以市场风险为主，保险风险平均占比高于信用风险；<br>
+        • {risk_desc}；<br>
         • 行业的风险分散效应和损失吸收都较为集中，有个别公司表现突出。
     </div>
     """, unsafe_allow_html=True)
@@ -974,10 +1037,47 @@ def render_page_03(standalone=True):
         st.markdown('<div class="section-break"></div>', unsafe_allow_html=True)
         # 保险风险最低资本情况
         st.markdown("#### 📊 保险风险最低资本情况")
-        st.markdown("""
+
+        # 动态生成保险风险最低资本情况的说明文字
+        comp_cats = st.session_state.get("comp_cats", {})
+        fixed_cat_order = ["大型公司", "中型公司", "小型公司", "银行系", "外资系", "养老健康"]
+        
+        # 计算各分类的寿险/非寿险保险风险最低资本占比中位数
+        cat_life_medians = {}
+        cat_nonlife_medians = {}
+        for cat_name in fixed_cat_order:
+            if cat_name not in comp_cats:
+                continue
+            cat_cos = comp_cats[cat_name]
+            mask_cat = df["公司"].isin(cat_cos)
+            if not mask_cat.any():
+                continue
+            for col, d in [("寿险业务保险风险最低资本合计/最低资本", cat_life_medians), ("非寿险业务保险风险最低资本合计/最低资本", cat_nonlife_medians)]:
+                if col in df.columns:
+                    med = df.loc[mask_cat, col].median() * 100
+                    if pd.notna(med):
+                        d[cat_name] = med
+        
+        # 寿险保险风险说明
+        if len(cat_life_medians) >= 1:
+            sorted_life = sorted(cat_life_medians.items(), key=lambda x: x[1], reverse=True)
+            top_cats = [c for c, v in sorted_life[:2]]
+            life_desc = f"寿险保险风险占比较高的公司主要是{'和'.join(top_cats)}等类型，且分布较为分散"
+        else:
+            life_desc = "寿险保险风险占比分布暂无足够分类数据"
+        
+        # 非寿险保险风险说明
+        if len(cat_nonlife_medians) >= 1:
+            sorted_nonlife = sorted(cat_nonlife_medians.items(), key=lambda x: x[1], reverse=True)
+            top_cat = sorted_nonlife[0][0]
+            nonlife_desc = f"非寿险保险风险占比明显较高的主要是{top_cat}类公司"
+        else:
+            nonlife_desc = "非寿险保险风险占比分布暂无足够分类数据"
+
+        st.markdown(f"""
         <div class="metric-explain">
-            • 寿险保险风险占比较高的主要是小型公司、外资系公司和养老健康类公司，且分布较为分散；<br>
-            • 非寿险保险风险占比明显较高的主要是养老健康类公司。
+            • {life_desc}；<br>
+            • {nonlife_desc}。
         </div>
         """, unsafe_allow_html=True)
 
@@ -1026,10 +1126,55 @@ def render_page_03(standalone=True):
         st.markdown('<div class="section-break"></div>', unsafe_allow_html=True)
         # 市场和信用风险最低资本情况
         st.markdown("#### 📊 市场和信用风险最低资本情况")
-        st.markdown("""
+
+        # 动态生成市场和信用风险最低资本情况的说明文字
+        comp_cats = st.session_state.get("comp_cats", {})
+        fixed_cat_order = ["大型公司", "中型公司", "小型公司", "银行系", "外资系", "养老健康"]
+        
+        # 计算各分类的市场/信用风险最低资本占比中位数
+        cat_market_medians = {}
+        cat_credit_medians = {}
+        for cat_name in fixed_cat_order:
+            if cat_name not in comp_cats:
+                continue
+            cat_cos = comp_cats[cat_name]
+            mask_cat = df["公司"].isin(cat_cos)
+            if not mask_cat.any():
+                continue
+            for col, d in [("市场风险-最低资本合计/最低资本", cat_market_medians), ("信用风险-最低资本合计/最低资本", cat_credit_medians)]:
+                if col in df.columns:
+                    med = df.loc[mask_cat, col].median() * 100
+                    if pd.notna(med):
+                        d[cat_name] = med
+
+        # 市场风险说明
+        if len(cat_market_medians) >= 2:
+            sorted_market = sorted(cat_market_medians.items(), key=lambda x: x[1], reverse=True)
+            top_cat, top_val = sorted_market[0]
+            bot_cat, bot_val = sorted_market[-1]
+            vals = list(cat_market_medians.values())
+            if max(vals) - min(vals) < 10:
+                market_desc = "市场风险占比较高的公司类型分布较为均匀"
+            else:
+                market_desc = f"{top_cat}等类型的市场风险占比较高，{bot_cat}等类型的占比较低"
+        else:
+            market_desc = "市场风险占比分布暂无足够分类数据"
+
+        # 信用风险说明
+        if len(cat_credit_medians) >= 2:
+            sorted_credit = sorted(cat_credit_medians.items(), key=lambda x: x[1], reverse=True)
+            top1_cat = sorted_credit[0][0]
+            top2_cat = sorted_credit[1][0]
+            credit_desc = f"信用风险占比较高的公司主要是{top1_cat}和{top2_cat}公司"
+        elif len(cat_credit_medians) == 1:
+            credit_desc = f"信用风险占比较高的公司主要是{list(cat_credit_medians.keys())[0]}公司"
+        else:
+            credit_desc = "信用风险占比分布暂无足够分类数据"
+
+        st.markdown(f"""
         <div class="metric-explain">
-            • 市场风险占比较高的公司类型分布较为均匀，大型公司和银行系的市场风险占比较低；<br>
-            • 信用风险占比较高的公司主要是小型公司和外资系公司。
+            • {market_desc}；<br>
+            • {credit_desc}。
         </div>
         """, unsafe_allow_html=True)
 
