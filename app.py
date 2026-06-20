@@ -1348,9 +1348,12 @@ def render_page_03(standalone=True):
             if len(sorted_disp) >= 2:
                 weakest = sorted_disp[-1]  # 中位数最大（最接近0）的分类
                 weak_cats = [cat for cat, v in sorted_disp if v >= weakest[1] - 0.02]
-                disp_desc = f"{'、'.join(weak_cats)}公司的风险分散效应稍弱"
+                # 去掉分类名末尾的"公司"/"系"等避免重复，最多取2个
+                clean_names = [c.replace("公司", "").replace("系", "").strip() for c in weak_cats[:2]]
+                disp_desc = f"{'、'.join(clean_names)}公司的风险分散效应稍弱"
             elif len(sorted_disp) == 1:
-                disp_desc = f"{sorted_disp[0][0]}公司的风险分散效应稍弱"
+                clean_name = sorted_disp[0][0].replace("公司", "").replace("系", "").strip()
+                disp_desc = f"{clean_name}公司的风险分散效应稍弱"
 
         if "特定类别保险合同损失吸收效应/最低资本" in df.columns:
             absrp_medians = {}
@@ -1363,9 +1366,11 @@ def render_page_03(standalone=True):
             if len(sorted_absrp) >= 2:
                 strongest = sorted_absrp[0]  # 中位数最小（最负）的分类
                 strong_cats = [cat for cat, v in sorted_absrp if v <= strongest[1] + 0.02]
-                absrp_desc = f"{'、'.join(strong_cats)}公司的损失吸收效应较为明显"
+                clean_names = [c.replace("公司", "").replace("系", "").strip() for c in strong_cats[:2]]
+                absrp_desc = f"{'、'.join(clean_names)}公司的损失吸收效应较为明显"
             elif len(sorted_absrp) == 1:
-                absrp_desc = f"{sorted_absrp[0][0]}公司的损失吸收效应较为明显"
+                clean_name = sorted_absrp[0][0].replace("公司", "").replace("系", "").strip()
+                absrp_desc = f"{clean_name}公司的损失吸收效应较为明显"
 
         desc_html = "<div class=\"metric-explain\">\n"
         if disp_desc:
@@ -1433,9 +1438,10 @@ def render_page_03(standalone=True):
                     stress_medians[cat] = float(vals.median())
             if stress_medians:
                 sorted_stress = sorted(stress_medians.items(), key=lambda x: x[1])
-                lowest = sorted_stress[0]
-                low_cats = [cat for cat, v in sorted_stress if v <= lowest[1] + 0.01]
-                stress_desc = "、".join(low_cats) + "公司的寿险保险风险压力因子明显低于其他类型公司的水平"
+                # 取压力因子最低的2个分类，避免列出过多
+                low_cats = [cat for cat, v in sorted_stress[:2]]
+                clean_names = [c.replace("公司", "").replace("系", "").strip() for c in low_cats]
+                stress_desc = "、".join(clean_names) + "等类型公司的寿险保险风险压力因子明显低于其他类型公司的水平"
 
         desc_html = """<div class="metric-explain">
             • 以该指标体现公司保险风险最低资本相对认可负债的压力因子值，比率越高说明负债对应的保险风险水平越高；<br>
