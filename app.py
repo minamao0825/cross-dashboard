@@ -1282,7 +1282,7 @@ def render_page_03(standalone=True):
         st.markdown("#### 📊 信用风险最低资本占认可资产率")
         st.markdown("""
         <div class="metric-explain">
-            • 信用风险由利差风险、交易对手违约风险等构成；
+            • 信用风险由利差风险、交易对手违约风险等构成；<br>
             • 利差风险是信用风险的主要组成部分。
         </div>
         """, unsafe_allow_html=True)
