@@ -1905,7 +1905,7 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=360, target_co=N
                     font=dict(size=10, color="#3C4858", family="SimHei"),
                 )
 
-        # ---------- 目标公司高亮（含光晕效果） ----------
+        # ---------- 目标公司高亮 ----------
         if target_co and len(target_co) > 0:
             t_mask = (co_names == target_co)
             if t_mask.any():
@@ -1920,13 +1920,6 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=360, target_co=N
                     t_color = stats[t_cat]['color']
                     display_y = min(t_val, y_max) if y_max is not None else t_val
                     lbl_t = f"{t_val*100:.1f}%" if pct_display else f"{t_val:.1f}%"
-                    # 光晕效果（大号半透明星星）
-                    fig.add_trace(go.Scatter(
-                        x=[t_idx], y=[display_y],
-                        mode="markers",
-                        marker=dict(size=22, color="#00BFFF", symbol="star", opacity=0.25),
-                        showlegend=False, hoverinfo="skip",
-                    ))
                     # 主星星
                     fig.add_trace(go.Scatter(
                         x=[t_idx],
@@ -2259,18 +2252,11 @@ def capital_tier_boxplot(df, target_co=None, height=360):
                                  marker=dict(size=10, color=color, symbol="square"),
                                  name=label, showlegend=True))
 
-        # 目标公司高亮（含光晕效果）
+        # 目标公司高亮
         if target_co and len(target_co) > 0:
             t_mask = (df["公司"] == target_co)
             if t_mask.any():
                 t_val = float(df.loc[t_mask, col].iloc[0])
-                # 光晕效果（大号半透明星星）
-                fig.add_trace(go.Scatter(
-                    x=[x_center], y=[t_val],
-                    mode="markers",
-                    marker=dict(size=22, color="#00BFFF", symbol="star", opacity=0.25),
-                    showlegend=False, hoverinfo="skip",
-                ))
                 # 主星星
                 fig.add_trace(go.Scatter(
                     x=[x_center], y=[t_val],
