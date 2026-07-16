@@ -1858,7 +1858,7 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=300, target_co=N
                     fig.add_trace(go.Scatter(
                         x=[bm_x], y=[display_y],
                         mode="markers+text",
-                        marker=dict(size=14, color=bm_color, line=dict(color="#fff", width=1.5), symbol=bm_symbol),
+                        marker=dict(size=16, color=bm_color, line=dict(color="#fff", width=1.5), symbol=bm_symbol),
                         text=[f"{bm_co} {lbl_bm}"],
                         textposition="top center",
                         textfont=dict(size=10, color=bm_color, family="SimHei"),
@@ -2012,7 +2012,7 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=300, target_co=N
                 fig.add_trace(go.Scatter(
                     x=[x_center], y=[display_y],
                     mode="markers+text",
-                    marker=dict(size=14, color=bm_color, line=dict(color="#fff", width=1.5), symbol=bm_symbol),
+                    marker=dict(size=16, color=bm_color, line=dict(color="#fff", width=1.5), symbol=bm_symbol),
                     text=[f"{bm_co} {lbl_bm}"],
                     textposition="top center",
                     textfont=dict(size=11, color=bm_color, family="SimHei"),
@@ -2206,7 +2206,7 @@ def capital_tier_boxplot(df, target_co=None, height=300):
                 fig.add_trace(go.Scatter(
                     x=[x_center], y=[bm_val],
                     mode="markers+text",
-                    marker=dict(size=14, color=bm_color, line=dict(color="#fff", width=1.5), symbol=bm_symbol),
+                    marker=dict(size=16, color=bm_color, line=dict(color="#fff", width=1.5), symbol=bm_symbol),
                     text=[f"{bm_co} {bm_val*100:.0f}%"],
                     textposition="top center",
                     textfont=dict(size=10, color=bm_color, family="SimHei"),
@@ -2443,7 +2443,7 @@ def mc_composition_boxplot(df, indicators, denominator_col, target_co=None, heig
                                     x=[i],
                                     y=[display_y],
                                     mode="markers+text",
-                                    marker=dict(size=14, color=bm_color, line=dict(color="#fff", width=1.5), symbol=bm_symbol),
+                                    marker=dict(size=16, color=bm_color, line=dict(color="#fff", width=1.5), symbol=bm_symbol),
                                     text=[f"{bm_co} {bm_val*100:.1f}%"],
                                     textposition="top center",
                                     textfont=dict(size=10, color=bm_color, family="SimHei"),
