@@ -1839,7 +1839,7 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=300, target_co=N
         bm1 = st.session_state.get("benchmark1_select")
         bm2 = st.session_state.get("benchmark2_select")
         benchmark_cos = [b for b in [bm1, bm2] if b and b != "（不选择）" and b != target_co]
-        bm_symbols = ["diamond", "square"]
+        bm_symbols = ["star", "star"]
         for bm_idx, bm_co in enumerate(benchmark_cos):
             bm_mask = (co_names == bm_co)
             if bm_mask.any():
@@ -1993,7 +1993,7 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=300, target_co=N
         bm1 = st.session_state.get("benchmark1_select")
         bm2 = st.session_state.get("benchmark2_select")
         benchmark_cos = [b for b in [bm1, bm2] if b and b != "（不选择）" and b != target_co]
-        bm_symbols = ["diamond", "square"]
+        bm_symbols = ["star", "star"]
         for bm_idx, bm_co in enumerate(benchmark_cos):
             bm_mask = (co_names == bm_co)
             if bm_mask.any():
@@ -2190,7 +2190,7 @@ def capital_tier_boxplot(df, target_co=None, height=300):
         bm1 = st.session_state.get("benchmark1_select")
         bm2 = st.session_state.get("benchmark2_select")
         benchmark_cos = [b for b in [bm1, bm2] if b and b != "（不选择）" and b != target_co]
-        bm_symbols = ["diamond", "square"]
+        bm_symbols = ["star", "star"]
         for bm_idx, bm_co in enumerate(benchmark_cos):
             bm_mask = (df["公司"] == bm_co)
             if bm_mask.any():
@@ -2414,7 +2414,7 @@ def mc_composition_boxplot(df, indicators, denominator_col, target_co=None, heig
     bm1 = st.session_state.get("benchmark1_select")
     bm2 = st.session_state.get("benchmark2_select")
     benchmark_cos = [b for b in [bm1, bm2] if b and b != "（不选择）" and b != target_co]
-    bm_symbols = ["diamond", "square"]
+    bm_symbols = ["star", "star"]
     # 查找对标公司所属分类的颜色
     bm_cat_colors = {}
     for bm_co in benchmark_cos:
