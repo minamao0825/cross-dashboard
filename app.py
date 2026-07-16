@@ -918,7 +918,7 @@ def render_page_02(standalone=True):
             plot_bgcolor="white", paper_bgcolor="white",
             yaxis_title="公司数量",
             yaxis=dict(gridcolor="#e0e0e0", zeroline=False, title_font=dict(size=13, family="SimHei")),
-            xaxis=dict(tickfont=dict(size=10, family="SimHei"), tickangle=-15),  # X轴刻度10px
+            xaxis=dict(tickfont=dict(size=12, family="SimHei"), tickangle=-15),  # X轴刻度10px
             bargap=0.3,
         )
         st.plotly_chart(fig_bar, use_container_width=True)
@@ -1969,7 +1969,7 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=360, target_co=N
             gridcolor="#f5f5f5",
             zeroline=False,
             title_font=dict(size=13, family="SimHei"),
-            tickfont=dict(size=10, family="SimHei"),
+            tickfont=dict(size=12, family="SimHei"),
             tickformat=".0%" if pct_display or (y_multiplier == 1.0 and vals.max() < 2) else "",
         )
         if y_max is not None:
@@ -2003,7 +2003,7 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=360, target_co=N
                 tickmode="array",
                 tickvals=list(range(n_cats)),
                 ticktext=cat_names_ordered,
-                tickfont=dict(size=10, family="SimHei"),
+                tickfont=dict(size=12, family="SimHei"),
                 showgrid=False,
                 range=[-0.5, n_cats - 0.6],
             ),
@@ -2113,7 +2113,7 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=360, target_co=N
             gridcolor="#f5f5f5",
             zeroline=False,
             title_font=dict(size=13, family="SimHei"),
-            tickfont=dict(size=10, family="SimHei"),
+            tickfont=dict(size=12, family="SimHei"),
             tickformat=".0%" if pct_display else "",
         )
         if y_max is not None:
@@ -2303,9 +2303,9 @@ def capital_tier_boxplot(df, target_co=None, height=360):
         yaxis_title="占实际资本比例",
         yaxis=dict(gridcolor="#f5f5f5", zeroline=False, range=[-0.02, 1.05],
                    tickformat=".0%", title_font=dict(size=13, family="SimHei"),  # Y轴标题13px
-                   tickfont=dict(size=10, family="SimHei")),  # Y轴刻度10px
+                   tickfont=dict(size=12, family="SimHei")),  # Y轴刻度10px
         xaxis=dict(tickmode="array", tickvals=list(range(len(tiers))),
-                   ticktext=[t[0] for t in tiers], tickfont=dict(size=10, family="SimHei"),
+                   ticktext=[t[0] for t in tiers], tickfont=dict(size=12, family="SimHei"),
                    showgrid=False, range=[-0.5, len(tiers)-0.8]),
         legend=dict(
             orientation="h",
@@ -2543,14 +2543,14 @@ def mc_composition_boxplot(df, indicators, denominator_col, target_co=None, heig
             gridcolor="#e0e0e0",
             zeroline=False,
             title_font=dict(size=13, family="SimHei"),
-            tickfont=dict(size=10, family="SimHei"),  # Y轴刻度10px
+            tickfont=dict(size=12, family="SimHei"),  # Y轴刻度10px
             range=[Y_MIN, Y_MAX],
         ),
         xaxis=dict(
             tickmode="array",
             tickvals=list(range(n_stats)),
             ticktext=[s["label"] for s in stats_list],
-            tickfont=dict(size=10, family="SimHei"),
+            tickfont=dict(size=12, family="SimHei"),
             showgrid=False,
             range=[-0.5, n_stats - 0.8],
         ),
