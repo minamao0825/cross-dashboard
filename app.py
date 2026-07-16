@@ -643,7 +643,7 @@ def render_page_02(standalone=True):
         # 资本分级行业分布箱线图
         st.markdown("##### 📈 资本分级行业分布情况")
         fig_cap = capital_tier_boxplot(df, target_co=target_co, height=360)
-        fig_cap.update_layout(margin=dict(r=110))
+        fig_cap.update_layout(margin=dict(r=40))
         fig_cap.update_xaxes(range=[-0.5, 3.8])
         if fig_cap:
             st.plotly_chart(fig_cap, use_container_width=True)
@@ -914,7 +914,7 @@ def render_page_02(standalone=True):
 
         fig_bar.update_layout(
             height=360,
-            margin=dict(l=40, r=20, t=20, b=60),
+            margin=dict(l=30, r=15, t=15, b=45),
             plot_bgcolor="white", paper_bgcolor="white",
             yaxis_title="公司数量",
             yaxis=dict(gridcolor="#e0e0e0", zeroline=False, title_font=dict(size=13, family="SimHei")),
@@ -1045,7 +1045,7 @@ def render_page_02(standalone=True):
             height=360, target_co=target_co, y_multiplier=1.0,
             group_by_category=True, y_min=-0.1, y_max=0.3, pct_display=True
         )
-        fig_pfl.update_layout(margin=dict(r=150))
+        fig_pfl.update_layout(margin=dict(r=50))
         fig_pfl.update_xaxes(range=[-0.5, 6.5])
         if fig_pfl:
             st.plotly_chart(fig_pfl, use_container_width=True)
@@ -1109,7 +1109,7 @@ def render_page_03(standalone=True):
                     values=list(sums.values()),
                     color_discrete_sequence=["#185FA5","#2E7AD6","#EF9F27","#1D9E75"]
                 )
-                fig_pie.update_layout(height=360, margin=dict(l=0,r=0,t=10,b=0))
+                fig_pie.update_layout(height=360, margin=dict(l=0,r=0,t=8,b=12))
                 st.plotly_chart(fig_pie, use_container_width=True)
 
         with col_box:
@@ -1133,7 +1133,7 @@ def render_page_03(standalone=True):
                     df_all, mc_indicators, "最低资本",
                     target_co=target_co, height=360
                 )
-                fig_mc.update_layout(margin=dict(r=110))
+                fig_mc.update_layout(margin=dict(r=40))
                 fig_mc.update_xaxes(range=[-0.5, 7.8])
                 if fig_mc:
                     st.plotly_chart(fig_mc, use_container_width=True)
@@ -1994,7 +1994,7 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=360, target_co=N
 
         fig.update_layout(
             height=height,
-            margin=dict(l=0, r=120, t=0, b=0),
+            margin=dict(l=0, r=50, t=8, b=18),
             plot_bgcolor="white",
             paper_bgcolor="white",
             font=dict(family="SimHei, Microsoft YaHei, sans-serif"),
@@ -2138,7 +2138,7 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=360, target_co=N
 
         fig.update_layout(
             height=height,
-            margin=dict(l=0, r=120, t=0, b=0),
+            margin=dict(l=0, r=50, t=8, b=18),
             plot_bgcolor="white",
             paper_bgcolor="white",
             font=dict(family="SimHei, Microsoft YaHei, sans-serif"),
@@ -2297,7 +2297,7 @@ def capital_tier_boxplot(df, target_co=None, height=360):
 
     fig.update_layout(
         height=height,
-        margin=dict(l=0, r=80, t=0, b=0),
+        margin=dict(l=0, r=40, t=8, b=18),
         plot_bgcolor="white", paper_bgcolor="white",
         font=dict(family="SimHei, Microsoft YaHei, sans-serif"),
         yaxis_title="占实际资本比例",
@@ -2534,7 +2534,7 @@ def mc_composition_boxplot(df, indicators, denominator_col, target_co=None, heig
 
     fig.update_layout(
         height=height,
-        margin=dict(l=0, r=80, t=0, b=0),
+        margin=dict(l=0, r=40, t=8, b=18),
         plot_bgcolor="white",
         paper_bgcolor="white",
         font=dict(family="SimHei, Microsoft YaHei, sans-serif"),
@@ -2630,7 +2630,7 @@ def histogram_with_box(df, indicator, xaxis_title, yaxis_title="公司数", nbin
 
     fig.update_layout(
         height=360,
-        margin=dict(l=0, r=60, t=30, b=0),
+        margin=dict(l=0, r=45, t=15, b=0),
         plot_bgcolor="white",
         paper_bgcolor="white",
         xaxis_title=xaxis_title,
