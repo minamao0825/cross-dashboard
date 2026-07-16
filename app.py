@@ -1717,14 +1717,14 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=300, target_co=N
             fig.add_shape(
                 type="line",
                 x0=x_center, x1=x_center, y0=mn, y1=q1,
-                line=dict(color=c, width=1.2, dash="dot"),
+                line=dict(color="#000000", width=1.2, dash="dot"),
                 layer="above",
             )
             # 下 whisker 末端小横线（加粗至1.8px）
             fig.add_shape(
                 type="line",
                 x0=x_center - TICK_LEN, x1=x_center + TICK_LEN, y0=mn, y1=mn,
-                line=dict(color=c, width=1.8),
+                line=dict(color="#000000", width=1.8),
                 layer="above",
             )
 
@@ -1732,24 +1732,23 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=300, target_co=N
             fig.add_shape(
                 type="line",
                 x0=x_center, x1=x_center, y0=q3, y1=mx,
-                line=dict(color=c, width=1.2, dash="dot"),
+                line=dict(color="#000000", width=1.2, dash="dot"),
                 layer="above",
             )
             # 上 whisker 末端小横线（加粗至1.8px）
             fig.add_shape(
                 type="line",
                 x0=x_center - TICK_LEN, x1=x_center + TICK_LEN, y0=mx, y1=mx,
-                line=dict(color=c, width=1.8),
+                line=dict(color="#000000", width=1.8),
                 layer="above",
             )
 
-            # ---- 3) 箱体（极浅蓝色调填充）----
-            # 使用统一的极浅填充色，保留分类边框颜色
+            # ---- 3) 箱体（黑色边框+极浅黑色调填充）----
             fig.add_shape(
                 type="rect",
                 x0=x0, x1=x1, y0=q1, y1=q3,
-                fillcolor="rgba(245, 248, 255, 0.55)",
-                line=dict(color=c, width=1.5),
+                fillcolor="rgba(0, 0, 0, 0.05)",
+                line=dict(color="#000000", width=1.5),
                 layer="above",
             )
 
@@ -1757,7 +1756,7 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=300, target_co=N
             fig.add_shape(
                 type="line",
                 x0=x0, x1=x1, y0=med, y1=med,
-                line=dict(color=c, width=2.5),
+                line=dict(color="#000000", width=2.5),
                 layer="above",
             )
 
@@ -1775,7 +1774,7 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=300, target_co=N
                     text=f"{s['max_co']} {lbl_mx}",
                     showarrow=False,
                     yshift=yshift_mx,
-                    font=dict(size=10, color=c, family="SimHei"),
+                    font=dict(size=10, color="#000000", family="SimHei"),
                 )
 
             # 最小值（下 whisker 末端）— 如果小于 y_min 则在边界处显示
@@ -1789,7 +1788,7 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=300, target_co=N
                     text=f"{s['min_co']} {lbl_mn}",
                     showarrow=False,
                     yshift=yshift_mn,
-                    font=dict(size=10, color=c, family="SimHei"),
+                    font=dict(size=10, color="#000000", family="SimHei"),
                 )
 
             # ---- 7) 图例 trace ----
