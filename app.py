@@ -255,6 +255,48 @@ CAT_COLORS = {
     "养老健康": "#34495E",
 }
 
+def _get_company_cat_color(co_name):
+    """查找公司所属6大类分类及颜色"""
+    for cat_name, cat_cos in st.session_state.get("comp_cats", {}).items():
+        if co_name in cat_cos:
+            return cat_name, CAT_COLORS.get(cat_name, "#2E7AD6")
+    return None, "#2E7AD6"
+
+def _bm_info_lines(df, label, fmt_func, val_col=None, numerator_col=None, denominator_col=None):
+    """生成对标公司1、2的信息文本行，追加到目标公司st.info之后
+    
+    参数:
+        df: 数据DataFrame
+        label: 指标标签（如"综合偿付能力充足率"）
+        fmt_func: 格式化函数 lambda val: f"{val:.1f}%" 或 lambda val: f"{val*100:.1f}%"
+        val_col: 直接取值列名（如COMP_PCT）
+        numerator_col/denominator_col: 比率计算的两列（如"市场风险-最低资本合计"/"最低资本"）
+    """
+    bm1 = st.session_state.get("benchmark1_select")
+    bm2 = st.session_state.get("benchmark2_select")
+    lines = []
+    for bm_co in [bm1, bm2]:
+        if not bm_co or bm_co == "（不选择）":
+            continue
+        bm_mask = df["公司"] == bm_co
+        if not bm_mask.any():
+            continue
+        bm_row = df[bm_mask].iloc[0]
+        bm_cat, bm_color = _get_company_cat_color(bm_co)
+        # 计算值
+        val = None
+        if val_col and val_col in bm_row.index:
+            val = bm_row[val_col]
+        elif numerator_col and denominator_col and numerator_col in bm_row.index and denominator_col in bm_row.index:
+            num = bm_row[numerator_col]
+            den = bm_row[denominator_col]
+            if pd.notna(den) and den != 0:
+                val = num / den
+        if val is not None and pd.notna(val):
+            formatted = fmt_func(val)
+            lines.append(f'<span style="color:{bm_color};">⭐ **对标公司：{bm_co}** — {label}：**{formatted}**</span>')
+    return lines
+
 # 公司分类（与PDF一致）
 # 指标分类（65个指标）
 IND_CATS = {
@@ -457,7 +499,11 @@ def render_page_01(standalone=True):
             t_mask = df["公司"] == target_co
             if t_mask.any():
                 t_val = df.loc[t_mask, COMP_PCT].iloc[0]
-                st.info(f"🎯 **目标公司：{target_co}** — 综合偿付能力充足率：**{t_val:.1f}%**")
+                bm_lines = _bm_info_lines(df, "综合偿付能力充足率", lambda v: f"{v:.1f}%", val_col=COMP_PCT)
+                info_text = f"🎯 **目标公司：{target_co}** — 综合偿付能力充足率：**{t_val:.1f}%**"
+                if bm_lines:
+                    info_text += "\n\n" + "\n\n".join(bm_lines)
+                st.info(info_text)
 
         if has_c:
             fig_box = boxplot_with_annotations(
@@ -476,7 +522,11 @@ def render_page_01(standalone=True):
             t_mask = df["公司"] == target_co
             if t_mask.any():
                 t_val = df.loc[t_mask, CORE_PCT].iloc[0]
-                st.info(f"🎯 **目标公司：{target_co}** — 核心偿付能力充足率：**{t_val:.1f}%**")
+                bm_lines = _bm_info_lines(df, "核心偿付能力充足率", lambda v: f"{v:.1f}%", val_col=CORE_PCT)
+                info_text = f"🎯 **目标公司：{target_co}** — 核心偿付能力充足率：**{t_val:.1f}%**"
+                if bm_lines:
+                    info_text += "\n\n" + "\n\n".join(bm_lines)
+                st.info(info_text)
 
         if has_k:
             fig_box_k = boxplot_with_annotations(
@@ -509,7 +559,11 @@ def render_page_01(standalone=True):
             t_mask = df["公司"] == target_co
             if t_mask.any():
                 t_val = df.loc[t_mask, "核心资本/注册资本"].iloc[0]
-                st.info(f"🎯 **目标公司：{target_co}** — 核心资本/注册资本率：**{t_val*100:.1f}%**")
+                bm_lines = _bm_info_lines(df, "核心资本/注册资本率", lambda v: f"{v*100:.1f}%", val_col="核心资本/注册资本")
+                info_text = f"🎯 **目标公司：{target_co}** — 核心资本/注册资本率：**{t_val*100:.1f}%**"
+                if bm_lines:
+                    info_text += "\n\n" + "\n\n".join(bm_lines)
+                st.info(info_text)
 
         if "核心资本/注册资本" in df.columns:
             fig_box_core_reg = boxplot_with_annotations(
@@ -529,7 +583,11 @@ def render_page_01(standalone=True):
             t_mask = df["公司"] == target_co
             if t_mask.any():
                 t_val = df.loc[t_mask, "实际资本/认可资产"].iloc[0]
-                st.info(f"🎯 **目标公司：{target_co}** — 实际资本/认可资产率：**{t_val*100:.1f}%**")
+                bm_lines = _bm_info_lines(df, "实际资本/认可资产率", lambda v: f"{v*100:.1f}%", val_col="实际资本/认可资产")
+                info_text = f"🎯 **目标公司：{target_co}** — 实际资本/认可资产率：**{t_val*100:.1f}%**"
+                if bm_lines:
+                    info_text += "\n\n" + "\n\n".join(bm_lines)
+                st.info(info_text)
 
         if "实际资本/认可资产" in df.columns:
             fig_box_ac_aa = boxplot_with_annotations(
@@ -646,7 +704,11 @@ def render_page_02(standalone=True):
             t_mask = df["公司"] == target_co
             if t_mask.any():
                 t_val = df.loc[t_mask, "核心一级资本占比"].iloc[0]
-                st.info(f"🎯 **目标公司：{target_co}** — 核心一级资本占比：**{t_val*100:.0f}%**")
+                bm_lines = _bm_info_lines(df, "核心一级资本占比", lambda v: f"{v*100:.0f}%", val_col="核心一级资本占比")
+                info_text = f"🎯 **目标公司：{target_co}** — 核心一级资本占比：**{t_val*100:.0f}%**"
+                if bm_lines:
+                    info_text += "\n\n" + "\n\n".join(bm_lines)
+                st.info(info_text)
 
         fig_core1 = boxplot_with_annotations(
             df, "核心一级资本占比",
@@ -664,7 +726,11 @@ def render_page_02(standalone=True):
             t_mask = df["公司"] == target_co
             if t_mask.any():
                 t_val = df.loc[t_mask, "核心二级资本占比"].iloc[0]
-                st.info(f"🎯 **目标公司：{target_co}** — 核心二级资本占比：**{t_val*100:.0f}%**")
+                bm_lines = _bm_info_lines(df, "核心二级资本占比", lambda v: f"{v*100:.0f}%", val_col="核心二级资本占比")
+                info_text = f"🎯 **目标公司：{target_co}** — 核心二级资本占比：**{t_val*100:.0f}%**"
+                if bm_lines:
+                    info_text += "\n\n" + "\n\n".join(bm_lines)
+                st.info(info_text)
 
         fig_core2 = boxplot_with_annotations(
             df, "核心二级资本占比",
@@ -742,7 +808,11 @@ def render_page_02(standalone=True):
             t_mask = df["公司"] == target_co
             if t_mask.any():
                 t_val = df.loc[t_mask, "附属一级资本占比"].iloc[0]
-                st.info(f"🎯 **目标公司：{target_co}** — 附属一级资本占比：**{t_val*100:.0f}%**")
+                bm_lines = _bm_info_lines(df, "附属一级资本占比", lambda v: f"{v*100:.0f}%", val_col="附属一级资本占比")
+                info_text = f"🎯 **目标公司：{target_co}** — 附属一级资本占比：**{t_val*100:.0f}%**"
+                if bm_lines:
+                    info_text += "\n\n" + "\n\n".join(bm_lines)
+                st.info(info_text)
 
         fig_aff1 = boxplot_with_annotations(
             df, "附属一级资本占比",
@@ -760,7 +830,11 @@ def render_page_02(standalone=True):
             t_mask = df["公司"] == target_co
             if t_mask.any():
                 t_val = df.loc[t_mask, "附属二级资本占比"].iloc[0]
-                st.info(f"🎯 **目标公司：{target_co}** — 附属二级资本占比：**{t_val*100:.0f}%**")
+                bm_lines = _bm_info_lines(df, "附属二级资本占比", lambda v: f"{v*100:.0f}%", val_col="附属二级资本占比")
+                info_text = f"🎯 **目标公司：{target_co}** — 附属二级资本占比：**{t_val*100:.0f}%**"
+                if bm_lines:
+                    info_text += "\n\n" + "\n\n".join(bm_lines)
+                st.info(info_text)
 
         fig_aff2 = boxplot_with_annotations(
             df, "附属二级资本占比",
@@ -851,7 +925,11 @@ def render_page_02(standalone=True):
             t_mask = df["公司"] == target_co
             if t_mask.any():
                 t_val = df.loc[t_mask, "计入核心资本的保单未来盈余占比"].iloc[0]
-                st.info(f"🎯 **目标公司：{target_co}** — 计入核心资本的保单未来盈余占比：**{t_val*100:.0f}%**")
+                bm_lines = _bm_info_lines(df, "计入核心资本的保单未来盈余占比", lambda v: f"{v*100:.0f}%", val_col="计入核心资本的保单未来盈余占比")
+                info_text = f"🎯 **目标公司：{target_co}** — 计入核心资本的保单未来盈余占比：**{t_val*100:.0f}%**"
+                if bm_lines:
+                    info_text += "\n\n" + "\n\n".join(bm_lines)
+                st.info(info_text)
 
         fig_pfl_box = boxplot_with_annotations(
             df, "计入核心资本的保单未来盈余占比",
@@ -891,7 +969,11 @@ def render_page_02(standalone=True):
             t_mask = df["公司"] == target_co
             if t_mask.any():
                 t_val = df.loc[t_mask, "核心一级资本中的保单未来盈余占比"].iloc[0]
-                st.info(f"🎯 **目标公司：{target_co}** — 核心一级资本中的保单未来盈余比例：**{t_val*100:.0f}%**")
+                bm_lines = _bm_info_lines(df, "核心一级资本中的保单未来盈余比例", lambda v: f"{v*100:.0f}%", val_col="核心一级资本中的保单未来盈余占比")
+                info_text = f"🎯 **目标公司：{target_co}** — 核心一级资本中的保单未来盈余比例：**{t_val*100:.0f}%**"
+                if bm_lines:
+                    info_text += "\n\n" + "\n\n".join(bm_lines)
+                st.info(info_text)
 
         fig_tier1 = boxplot_with_annotations(
             df, "核心一级资本中的保单未来盈余占比",
@@ -909,7 +991,11 @@ def render_page_02(standalone=True):
             t_mask = df["公司"] == target_co
             if t_mask.any():
                 t_val = df.loc[t_mask, "附属一级资本中保单未来盈余占比"].iloc[0]
-                st.info(f"🎯 **目标公司：{target_co}** — 附属一级资本中的保单未来盈余比例：**{t_val*100:.0f}%**")
+                bm_lines = _bm_info_lines(df, "附属一级资本中的保单未来盈余比例", lambda v: f"{v*100:.0f}%", val_col="附属一级资本中保单未来盈余占比")
+                info_text = f"🎯 **目标公司：{target_co}** — 附属一级资本中的保单未来盈余比例：**{t_val*100:.0f}%**"
+                if bm_lines:
+                    info_text += "\n\n" + "\n\n".join(bm_lines)
+                st.info(info_text)
 
         fig_tier2 = boxplot_with_annotations(
             df, "附属一级资本中保单未来盈余占比",
@@ -945,7 +1031,11 @@ def render_page_02(standalone=True):
             t_mask = df["公司"] == target_co
             if t_mask.any():
                 t_val = df.loc[t_mask, "保单未来盈余/保险合同负债"].iloc[0]
-                st.info(f"🎯 **目标公司：{target_co}** — 保单未来盈余/保险合同负债：**{t_val*100:.1f}%**")
+                bm_lines = _bm_info_lines(df, "保单未来盈余/保险合同负债", lambda v: f"{v*100:.1f}%", val_col="保单未来盈余/保险合同负债")
+                info_text = f"🎯 **目标公司：{target_co}** — 保单未来盈余/保险合同负债：**{t_val*100:.1f}%**"
+                if bm_lines:
+                    info_text += "\n\n" + "\n\n".join(bm_lines)
+                st.info(info_text)
 
         # 箱线图
         fig_pfl = boxplot_with_annotations(
@@ -1107,7 +1197,11 @@ def render_page_03(standalone=True):
                     if pd.notna(t_row["最低资本"]) and t_row["最低资本"] != 0:
                         t_val = t_row["寿险业务保险风险最低资本合计"] / t_row["最低资本"]
                         if pd.notna(t_val):
-                            st.info(f"🎯 **目标公司：{target_co}** — 寿险业务保险风险最低资本占比：**{t_val*100:.1f}%**")
+                            bm_lines = _bm_info_lines(df, "寿险业务保险风险最低资本占比", lambda v: f"{v*100:.1f}%", numerator_col="寿险业务保险风险最低资本合计", denominator_col="最低资本")
+                            info_text = f"🎯 **目标公司：{target_co}** — 寿险业务保险风险最低资本占比：**{t_val*100:.1f}%**"
+                            if bm_lines:
+                                info_text += "\n\n" + "\n\n".join(bm_lines)
+                            st.info(info_text)
             fig_life = boxplot_with_annotations(
                 df, "寿险业务保险风险最低资本合计/最低资本",
                 "寿险业务保险风险最低资本占比",
@@ -1127,7 +1221,11 @@ def render_page_03(standalone=True):
                     if pd.notna(t_row["最低资本"]) and t_row["最低资本"] != 0:
                         t_val = t_row["非寿险业务保险风险最低资本合计"] / t_row["最低资本"]
                         if pd.notna(t_val):
-                            st.info(f"🎯 **目标公司：{target_co}** — 非寿险业务保险风险最低资本占比：**{t_val*100:.1f}%**")
+                            bm_lines = _bm_info_lines(df, "非寿险业务保险风险最低资本占比", lambda v: f"{v*100:.1f}%", numerator_col="非寿险业务保险风险最低资本合计", denominator_col="最低资本")
+                            info_text = f"🎯 **目标公司：{target_co}** — 非寿险业务保险风险最低资本占比：**{t_val*100:.1f}%**"
+                            if bm_lines:
+                                info_text += "\n\n" + "\n\n".join(bm_lines)
+                            st.info(info_text)
             fig_nonlife = boxplot_with_annotations(
                 df, "非寿险业务保险风险最低资本合计/最低资本",
                 "非寿险业务保险风险最低资本占比",
@@ -1204,7 +1302,11 @@ def render_page_03(standalone=True):
                     if pd.notna(t_row["最低资本"]) and t_row["最低资本"] != 0:
                         t_val = t_row["市场风险-最低资本合计"] / t_row["最低资本"]
                         if pd.notna(t_val):
-                            st.info(f"🎯 **目标公司：{target_co}** — 市场风险最低资本占比：**{t_val*100:.1f}%**")
+                            bm_lines = _bm_info_lines(df, "市场风险最低资本占比", lambda v: f"{v*100:.1f}%", numerator_col="市场风险-最低资本合计", denominator_col="最低资本")
+                            info_text = f"🎯 **目标公司：{target_co}** — 市场风险最低资本占比：**{t_val*100:.1f}%**"
+                            if bm_lines:
+                                info_text += "\n\n" + "\n\n".join(bm_lines)
+                            st.info(info_text)
             fig_market = boxplot_with_annotations(
                 df, "市场风险-最低资本合计/最低资本",
                 "市场风险最低资本占比",
@@ -1224,7 +1326,11 @@ def render_page_03(standalone=True):
                     if pd.notna(t_row["最低资本"]) and t_row["最低资本"] != 0:
                         t_val = t_row["信用风险-最低资本合计"] / t_row["最低资本"]
                         if pd.notna(t_val):
-                            st.info(f"🎯 **目标公司：{target_co}** — 信用风险最低资本占比：**{t_val*100:.1f}%**")
+                            bm_lines = _bm_info_lines(df, "信用风险最低资本占比", lambda v: f"{v*100:.1f}%", numerator_col="信用风险-最低资本合计", denominator_col="最低资本")
+                            info_text = f"🎯 **目标公司：{target_co}** — 信用风险最低资本占比：**{t_val*100:.1f}%**"
+                            if bm_lines:
+                                info_text += "\n\n" + "\n\n".join(bm_lines)
+                            st.info(info_text)
             fig_credit = boxplot_with_annotations(
                 df, "信用风险-最低资本合计/最低资本",
                 "信用风险最低资本占比",
@@ -1258,7 +1364,11 @@ def render_page_03(standalone=True):
                     if pd.notna(t_row["认可资产"]) and t_row["认可资产"] != 0:
                         t_val = t_row["市场风险-利率风险最低资本"] / t_row["认可资产"]
                         if pd.notna(t_val):
-                            st.info(f"🎯 **目标公司：{target_co}** — 利率风险/认可资产率：**{t_val*100:.1f}%**")
+                            bm_lines = _bm_info_lines(df, "利率风险/认可资产率", lambda v: f"{v*100:.1f}%", numerator_col="市场风险-利率风险最低资本", denominator_col="认可资产")
+                            info_text = f"🎯 **目标公司：{target_co}** — 利率风险/认可资产率：**{t_val*100:.1f}%**"
+                            if bm_lines:
+                                info_text += "\n\n" + "\n\n".join(bm_lines)
+                            st.info(info_text)
             fig_rate = boxplot_with_annotations(
                 df, "利率风险/认可资产",
                 "利率风险/认可资产率",
@@ -1278,7 +1388,11 @@ def render_page_03(standalone=True):
                     if pd.notna(t_row["认可资产"]) and t_row["认可资产"] != 0:
                         t_val = t_row["市场风险-权益价格风险最低资本"] / t_row["认可资产"]
                         if pd.notna(t_val):
-                            st.info(f"🎯 **目标公司：{target_co}** — 权益价格风险/认可资产率：**{t_val*100:.1f}%**")
+                            bm_lines = _bm_info_lines(df, "权益价格风险/认可资产率", lambda v: f"{v*100:.1f}%", numerator_col="市场风险-权益价格风险最低资本", denominator_col="认可资产")
+                            info_text = f"🎯 **目标公司：{target_co}** — 权益价格风险/认可资产率：**{t_val*100:.1f}%**"
+                            if bm_lines:
+                                info_text += "\n\n" + "\n\n".join(bm_lines)
+                            st.info(info_text)
             fig_equity = boxplot_with_annotations(
                 df, "权益价格风险/认可资产",
                 "权益价格风险/认可资产率",
@@ -1311,7 +1425,11 @@ def render_page_03(standalone=True):
                     if pd.notna(t_row["认可资产"]) and t_row["认可资产"] != 0:
                         t_val = t_row["信用风险-利差风险最低资本"] / t_row["认可资产"]
                         if pd.notna(t_val):
-                            st.info(f"🎯 **目标公司：{target_co}** — 利差风险/认可资产率：**{t_val*100:.1f}%**")
+                            bm_lines = _bm_info_lines(df, "利差风险/认可资产率", lambda v: f"{v*100:.1f}%", numerator_col="信用风险-利差风险最低资本", denominator_col="认可资产")
+                            info_text = f"🎯 **目标公司：{target_co}** — 利差风险/认可资产率：**{t_val*100:.1f}%**"
+                            if bm_lines:
+                                info_text += "\n\n" + "\n\n".join(bm_lines)
+                            st.info(info_text)
             fig_spread = boxplot_with_annotations(
                 df, "利差风险/认可资产",
                 "利差风险/认可资产率",
@@ -1331,7 +1449,11 @@ def render_page_03(standalone=True):
                     if pd.notna(t_row["认可资产"]) and t_row["认可资产"] != 0:
                         t_val = t_row["信用风险-交易对手违约风险最低资本"] / t_row["认可资产"]
                         if pd.notna(t_val):
-                            st.info(f"🎯 **目标公司：{target_co}** — 对手违约风险/认可资产率：**{t_val*100:.1f}%**")
+                            bm_lines = _bm_info_lines(df, "对手违约风险/认可资产率", lambda v: f"{v*100:.1f}%", numerator_col="信用风险-交易对手违约风险最低资本", denominator_col="认可资产")
+                            info_text = f"🎯 **目标公司：{target_co}** — 对手违约风险/认可资产率：**{t_val*100:.1f}%**"
+                            if bm_lines:
+                                info_text += "\n\n" + "\n\n".join(bm_lines)
+                            st.info(info_text)
             fig_default = boxplot_with_annotations(
                 df, "对手违约风险/认可资产",
                 "对手违约风险/认可资产率",
@@ -1404,7 +1526,11 @@ def render_page_03(standalone=True):
                     if pd.notna(t_row["最低资本"]) and t_row["最低资本"] != 0:
                         t_val = t_row["量化风险分散效应"] / t_row["最低资本"]
                         if pd.notna(t_val):
-                            st.info(f"🎯 **目标公司：{target_co}** — 风险分散效应最低资本占比：**{t_val*100:.1f}%**")
+                            bm_lines = _bm_info_lines(df, "风险分散效应最低资本占比", lambda v: f"{v*100:.1f}%", numerator_col="量化风险分散效应", denominator_col="最低资本")
+                            info_text = f"🎯 **目标公司：{target_co}** — 风险分散效应最低资本占比：**{t_val*100:.1f}%**"
+                            if bm_lines:
+                                info_text += "\n\n" + "\n\n".join(bm_lines)
+                            st.info(info_text)
             fig_disp = boxplot_with_annotations(
                 df, "量化风险分散效应/最低资本",
                 "风险分散效应最低资本占比",
@@ -1424,7 +1550,11 @@ def render_page_03(standalone=True):
                     if pd.notna(t_row["最低资本"]) and t_row["最低资本"] != 0:
                         t_val = t_row["特定类别保险合同损失吸收效应"] / t_row["最低资本"]
                         if pd.notna(t_val):
-                            st.info(f"🎯 **目标公司：{target_co}** — 损失吸收效应最低资本占比：**{t_val*100:.1f}%**")
+                            bm_lines = _bm_info_lines(df, "损失吸收效应最低资本占比", lambda v: f"{v*100:.1f}%", numerator_col="特定类别保险合同损失吸收效应", denominator_col="最低资本")
+                            info_text = f"🎯 **目标公司：{target_co}** — 损失吸收效应最低资本占比：**{t_val*100:.1f}%**"
+                            if bm_lines:
+                                info_text += "\n\n" + "\n\n".join(bm_lines)
+                            st.info(info_text)
             fig_absrp = boxplot_with_annotations(
                 df, "特定类别保险合同损失吸收效应/最低资本",
                 "损失吸收效应最低资本占比",
@@ -1475,7 +1605,11 @@ def render_page_03(standalone=True):
                     if pd.notna(t_row["认可负债"]) and t_row["认可负债"] != 0:
                         t_val = t_row["寿险业务保险风险最低资本合计"] / t_row["认可负债"]
                         if pd.notna(t_val):
-                            st.info(f"🎯 **目标公司：{target_co}** — 保险风险（寿）/认可负债率：**{t_val*100:.1f}%**")
+                            bm_lines = _bm_info_lines(df, "保险风险（寿）/认可负债率", lambda v: f"{v*100:.1f}%", numerator_col="寿险业务保险风险最低资本合计", denominator_col="认可负债")
+                            info_text = f"🎯 **目标公司：{target_co}** — 保险风险（寿）/认可负债率：**{t_val*100:.1f}%**"
+                            if bm_lines:
+                                info_text += "\n\n" + "\n\n".join(bm_lines)
+                            st.info(info_text)
             fig_life_stress = boxplot_with_annotations(
                 df, "寿险业务保险风险最低资本合计/认可负债",
                 "保险风险（寿）/认可负债率",
@@ -1495,7 +1629,11 @@ def render_page_03(standalone=True):
                     if pd.notna(t_row["认可负债"]) and t_row["认可负债"] != 0:
                         t_val = t_row["非寿险业务保险风险最低资本合计"] / t_row["认可负债"]
                         if pd.notna(t_val):
-                            st.info(f"🎯 **目标公司：{target_co}** — 保险风险（非寿）/认可负债率：**{t_val*100:.1f}%**")
+                            bm_lines = _bm_info_lines(df, "保险风险（非寿）/认可负债率", lambda v: f"{v*100:.1f}%", numerator_col="非寿险业务保险风险最低资本合计", denominator_col="认可负债")
+                            info_text = f"🎯 **目标公司：{target_co}** — 保险风险（非寿）/认可负债率：**{t_val*100:.1f}%**"
+                            if bm_lines:
+                                info_text += "\n\n" + "\n\n".join(bm_lines)
+                            st.info(info_text)
             fig_nonlife_stress = boxplot_with_annotations(
                 df, "非寿险业务保险风险最低资本合计/认可负债",
                 "保险风险（非寿）/认可负债率",
