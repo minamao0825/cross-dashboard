@@ -1835,6 +1835,38 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=300, target_co=N
                         hoverinfo="skip",
                     ))
 
+        # ---------- 对标公司高亮 ----------
+        bm1 = st.session_state.get("benchmark1_select")
+        bm2 = st.session_state.get("benchmark2_select")
+        benchmark_cos = [b for b in [bm1, bm2] if b and b != "（不选择）" and b != target_co]
+        bm_colors = ["#EF9F27", "#2EB872"]
+        bm_symbols = ["diamond", "square"]
+        for bm_idx, bm_co in enumerate(benchmark_cos):
+            bm_mask = (co_names == bm_co)
+            if bm_mask.any():
+                bm_val = float(vals[bm_mask].iloc[0])
+                bm_cat = None
+                for cat_name, cat_cos in st.session_state.get("comp_cats", {}).items():
+                    if bm_co in cat_cos:
+                        bm_cat = cat_name
+                        break
+                if bm_cat and bm_cat in cat_names_ordered:
+                    bm_x = cat_names_ordered.index(bm_cat)
+                    bm_color = bm_colors[bm_idx % len(bm_colors)]
+                    bm_symbol = bm_symbols[bm_idx % len(bm_symbols)]
+                    display_y = min(bm_val, y_max) if y_max is not None else bm_val
+                    lbl_bm = f"{bm_val*100:.1f}%" if pct_display else f"{bm_val:.1f}%"
+                    fig.add_trace(go.Scatter(
+                        x=[bm_x], y=[display_y],
+                        mode="markers+text",
+                        marker=dict(size=14, color=bm_color, line=dict(color="#fff", width=1.5), symbol=bm_symbol),
+                        text=[f"{bm_co} {lbl_bm}"],
+                        textposition="top center",
+                        textfont=dict(size=10, color=bm_color, family="SimHei"),
+                        showlegend=False,
+                        hoverinfo="skip",
+                    ))
+
         # ---------- 布局 ----------
         yaxis_cfg = dict(
             gridcolor="#f5f5f5",
@@ -1955,6 +1987,31 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=300, target_co=N
                     text=[f"{target_co} {lbl_t}"],
                     textposition="top center",
                     textfont=dict(size=11, color="#185FA5", family="SimHei"),
+                    showlegend=False, hoverinfo="skip",
+                ))
+
+        # 对标公司高亮
+        bm1 = st.session_state.get("benchmark1_select")
+        bm2 = st.session_state.get("benchmark2_select")
+        benchmark_cos = [b for b in [bm1, bm2] if b and b != "（不选择）" and b != target_co]
+        bm_colors = ["#EF9F27", "#2EB872"]
+        bm_symbols = ["diamond", "square"]
+        for bm_idx, bm_co in enumerate(benchmark_cos):
+            bm_mask = (co_names == bm_co)
+            if bm_mask.any():
+                bm_val = float(vals[bm_mask].iloc[0])
+                display_y = bm_val if (y_max is None or bm_val <= y_max) else y_max
+                display_y = display_y if display_y >= y_min else y_min
+                lbl_bm = f"{bm_val*100:.1f}%" if pct_display else f"{bm_val:.1f}%"
+                bm_color = bm_colors[bm_idx % len(bm_colors)]
+                bm_symbol = bm_symbols[bm_idx % len(bm_symbols)]
+                fig.add_trace(go.Scatter(
+                    x=[x_center], y=[display_y],
+                    mode="markers+text",
+                    marker=dict(size=14, color=bm_color, line=dict(color="#fff", width=1.5), symbol=bm_symbol),
+                    text=[f"{bm_co} {lbl_bm}"],
+                    textposition="top center",
+                    textfont=dict(size=11, color=bm_color, family="SimHei"),
                     showlegend=False, hoverinfo="skip",
                 ))
 
@@ -2122,6 +2179,28 @@ def capital_tier_boxplot(df, target_co=None, height=300):
                     text=[f"{target_co} {t_val*100:.0f}%"],
                     textposition="top center",
                     textfont=dict(size=10, color="#00BFFF", family="SimHei"),
+                    showlegend=False, hoverinfo="skip",
+                ))
+
+        # 对标公司高亮
+        bm1 = st.session_state.get("benchmark1_select")
+        bm2 = st.session_state.get("benchmark2_select")
+        benchmark_cos = [b for b in [bm1, bm2] if b and b != "（不选择）" and b != target_co]
+        bm_colors = ["#EF9F27", "#2EB872"]
+        bm_symbols = ["diamond", "square"]
+        for bm_idx, bm_co in enumerate(benchmark_cos):
+            bm_mask = (df["公司"] == bm_co)
+            if bm_mask.any():
+                bm_val = float(df.loc[bm_mask, col].iloc[0])
+                bm_color = bm_colors[bm_idx % len(bm_colors)]
+                bm_symbol = bm_symbols[bm_idx % len(bm_symbols)]
+                fig.add_trace(go.Scatter(
+                    x=[x_center], y=[bm_val],
+                    mode="markers+text",
+                    marker=dict(size=14, color=bm_color, line=dict(color="#fff", width=1.5), symbol=bm_symbol),
+                    text=[f"{bm_co} {bm_val*100:.0f}%"],
+                    textposition="top center",
+                    textfont=dict(size=10, color=bm_color, family="SimHei"),
                     showlegend=False, hoverinfo="skip",
                 ))
 
@@ -2322,6 +2401,39 @@ def mc_composition_boxplot(df, indicators, denominator_col, target_co=None, heig
                                     hoverinfo="skip",
                                 ))
 
+    # ---- 对标公司高亮 ----
+    bm1 = st.session_state.get("benchmark1_select")
+    bm2 = st.session_state.get("benchmark2_select")
+    benchmark_cos = [b for b in [bm1, bm2] if b and b != "（不选择）" and b != target_co]
+    bm_colors = ["#EF9F27", "#2EB872"]
+    bm_symbols = ["diamond", "square"]
+    for bm_idx, bm_co in enumerate(benchmark_cos):
+        bm_mask = (df["公司"] == bm_co)
+        if bm_mask.any():
+            bmrow = df[bm_mask].iloc[0]
+            if denominator_col in bmrow.index:
+                denom = bmrow[denominator_col]
+                if pd.notna(denom) and denom != 0:
+                    for i, s in enumerate(stats_list):
+                        if s["col"] in bmrow.index:
+                            bm_val = bmrow[s["col"]] / denom
+                            if pd.notna(bm_val):
+                                display_y = bm_val if bm_val <= Y_MAX else Y_MAX
+                                display_y = display_y if display_y >= Y_MIN else Y_MIN
+                                bm_color = bm_colors[bm_idx % len(bm_colors)]
+                                bm_symbol = bm_symbols[bm_idx % len(bm_symbols)]
+                                fig.add_trace(go.Scatter(
+                                    x=[i],
+                                    y=[display_y],
+                                    mode="markers+text",
+                                    marker=dict(size=14, color=bm_color, line=dict(color="#fff", width=1.5), symbol=bm_symbol),
+                                    text=[f"{bm_co} {bm_val*100:.1f}%"],
+                                    textposition="top center",
+                                    textfont=dict(size=10, color=bm_color, family="SimHei"),
+                                    showlegend=False,
+                                    hoverinfo="skip",
+                                ))
+
     fig.update_layout(
         height=height,
         margin=dict(l=0, r=80, t=0, b=0),
@@ -2393,6 +2505,24 @@ def histogram_with_box(df, indicator, xaxis_title, yaxis_title="公司数", nbin
                 annotation_text=f"  {target_co}",
                 annotation_position="top"
             )
+
+    # 对标公司高亮
+    bm1 = st.session_state.get("benchmark1_select")
+    bm2 = st.session_state.get("benchmark2_select")
+    benchmark_cos = [b for b in [bm1, bm2] if b and b != "（不选择）" and b != target_co]
+    bm_colors = ["#E24B4A", "#2EB872"]
+    for bm_idx, bm_co in enumerate(benchmark_cos):
+        if bm_co in dfp["公司"].values:
+            bm_row = dfp[dfp["公司"] == bm_co]
+            if not bm_row.empty:
+                bm_val = bm_row.iloc[0][col_plot]
+                fig.add_vline(
+                    x=bm_val,
+                    line_color=bm_colors[bm_idx % len(bm_colors)],
+                    line_width=2,
+                    annotation_text=f"  {bm_co}",
+                    annotation_position="top"
+                )
 
     fig.update_layout(
         height=360,
@@ -2818,8 +2948,26 @@ with st.sidebar:
             index=0
         )
         target_co = None if target_co == "（不选择）" else target_co
+        # 对标公司
+        benchmark_options = ["（不选择）"] + df["公司"].tolist()
+        benchmark1_co = st.selectbox(
+            "追踪对标公司 1",
+            benchmark_options,
+            index=0,
+            key="benchmark1_select"
+        )
+        benchmark1_co = None if benchmark1_co == "（不选择）" else benchmark1_co
+        benchmark2_co = st.selectbox(
+            "追踪对标公司 2",
+            benchmark_options,
+            index=0,
+            key="benchmark2_select"
+        )
+        benchmark2_co = None if benchmark2_co == "（不选择）" else benchmark2_co
     else:
         target_co = None
+        benchmark1_co = None
+        benchmark2_co = None
 
     st.divider()
 
