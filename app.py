@@ -245,6 +245,16 @@ CORE_PCT    = "核心偿付能力充足率(%)"
 THR_COMP_PASS = 1.0   # 100%
 THR_COMP_WARN = 1.5   # 150%
 
+# 6大类公司分类颜色（全局共享）
+CAT_COLORS = {
+    "大型公司": "#2E7AD6",
+    "中型公司": "#7B5DBE",
+    "小型公司": "#E8913A",
+    "银行系":   "#2EB872",
+    "外资系":   "#E24B4A",
+    "养老健康": "#34495E",
+}
+
 # 公司分类（与PDF一致）
 # 指标分类（65个指标）
 IND_CATS = {
@@ -1645,16 +1655,6 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=300, target_co=N
     co_names = df.loc[sr.index, "公司"].reset_index(drop=True)
     vals = vals.reset_index(drop=True)
 
-    # 分类颜色（参照参考图）
-    CAT_COLORS = {
-        "大型公司": "#2E7AD6",
-        "中型公司": "#7B5DBE",
-        "小型公司": "#E8913A",
-        "银行系":   "#2EB872",
-        "外资系":   "#E24B4A",
-        "养老健康": "#34495E",
-    }
-
     fig = go.Figure()
 
     if group_by_category:
@@ -1839,7 +1839,6 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=300, target_co=N
         bm1 = st.session_state.get("benchmark1_select")
         bm2 = st.session_state.get("benchmark2_select")
         benchmark_cos = [b for b in [bm1, bm2] if b and b != "（不选择）" and b != target_co]
-        bm_colors = ["#EF9F27", "#2EB872"]
         bm_symbols = ["diamond", "square"]
         for bm_idx, bm_co in enumerate(benchmark_cos):
             bm_mask = (co_names == bm_co)
@@ -1852,7 +1851,7 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=300, target_co=N
                         break
                 if bm_cat and bm_cat in cat_names_ordered:
                     bm_x = cat_names_ordered.index(bm_cat)
-                    bm_color = bm_colors[bm_idx % len(bm_colors)]
+                    bm_color = CAT_COLORS.get(bm_cat, "#2E7AD6")
                     bm_symbol = bm_symbols[bm_idx % len(bm_symbols)]
                     display_y = min(bm_val, y_max) if y_max is not None else bm_val
                     lbl_bm = f"{bm_val*100:.1f}%" if pct_display else f"{bm_val:.1f}%"
@@ -1994,7 +1993,6 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=300, target_co=N
         bm1 = st.session_state.get("benchmark1_select")
         bm2 = st.session_state.get("benchmark2_select")
         benchmark_cos = [b for b in [bm1, bm2] if b and b != "（不选择）" and b != target_co]
-        bm_colors = ["#EF9F27", "#2EB872"]
         bm_symbols = ["diamond", "square"]
         for bm_idx, bm_co in enumerate(benchmark_cos):
             bm_mask = (co_names == bm_co)
@@ -2003,7 +2001,13 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=300, target_co=N
                 display_y = bm_val if (y_max is None or bm_val <= y_max) else y_max
                 display_y = display_y if display_y >= y_min else y_min
                 lbl_bm = f"{bm_val*100:.1f}%" if pct_display else f"{bm_val:.1f}%"
-                bm_color = bm_colors[bm_idx % len(bm_colors)]
+                # 查找对标公司所属分类的颜色
+                bm_cat = None
+                for cat_name, cat_cos in st.session_state.get("comp_cats", {}).items():
+                    if bm_co in cat_cos:
+                        bm_cat = cat_name
+                        break
+                bm_color = CAT_COLORS.get(bm_cat, "#2E7AD6") if bm_cat else "#2E7AD6"
                 bm_symbol = bm_symbols[bm_idx % len(bm_symbols)]
                 fig.add_trace(go.Scatter(
                     x=[x_center], y=[display_y],
@@ -2186,13 +2190,18 @@ def capital_tier_boxplot(df, target_co=None, height=300):
         bm1 = st.session_state.get("benchmark1_select")
         bm2 = st.session_state.get("benchmark2_select")
         benchmark_cos = [b for b in [bm1, bm2] if b and b != "（不选择）" and b != target_co]
-        bm_colors = ["#EF9F27", "#2EB872"]
         bm_symbols = ["diamond", "square"]
         for bm_idx, bm_co in enumerate(benchmark_cos):
             bm_mask = (df["公司"] == bm_co)
             if bm_mask.any():
                 bm_val = float(df.loc[bm_mask, col].iloc[0])
-                bm_color = bm_colors[bm_idx % len(bm_colors)]
+                # 查找对标公司所属分类的颜色
+                bm_cat = None
+                for cat_name, cat_cos in st.session_state.get("comp_cats", {}).items():
+                    if bm_co in cat_cos:
+                        bm_cat = cat_name
+                        break
+                bm_color = CAT_COLORS.get(bm_cat, "#2E7AD6") if bm_cat else "#2E7AD6"
                 bm_symbol = bm_symbols[bm_idx % len(bm_symbols)]
                 fig.add_trace(go.Scatter(
                     x=[x_center], y=[bm_val],
@@ -2405,8 +2414,16 @@ def mc_composition_boxplot(df, indicators, denominator_col, target_co=None, heig
     bm1 = st.session_state.get("benchmark1_select")
     bm2 = st.session_state.get("benchmark2_select")
     benchmark_cos = [b for b in [bm1, bm2] if b and b != "（不选择）" and b != target_co]
-    bm_colors = ["#EF9F27", "#2EB872"]
     bm_symbols = ["diamond", "square"]
+    # 查找对标公司所属分类的颜色
+    bm_cat_colors = {}
+    for bm_co in benchmark_cos:
+        bm_cat = None
+        for cat_name, cat_cos in st.session_state.get("comp_cats", {}).items():
+            if bm_co in cat_cos:
+                bm_cat = cat_name
+                break
+        bm_cat_colors[bm_co] = CAT_COLORS.get(bm_cat, "#2E7AD6") if bm_cat else "#2E7AD6"
     for bm_idx, bm_co in enumerate(benchmark_cos):
         bm_mask = (df["公司"] == bm_co)
         if bm_mask.any():
@@ -2420,7 +2437,7 @@ def mc_composition_boxplot(df, indicators, denominator_col, target_co=None, heig
                             if pd.notna(bm_val):
                                 display_y = bm_val if bm_val <= Y_MAX else Y_MAX
                                 display_y = display_y if display_y >= Y_MIN else Y_MIN
-                                bm_color = bm_colors[bm_idx % len(bm_colors)]
+                                bm_color = bm_cat_colors.get(bm_co, "#2E7AD6")
                                 bm_symbol = bm_symbols[bm_idx % len(bm_symbols)]
                                 fig.add_trace(go.Scatter(
                                     x=[i],
@@ -2510,15 +2527,21 @@ def histogram_with_box(df, indicator, xaxis_title, yaxis_title="公司数", nbin
     bm1 = st.session_state.get("benchmark1_select")
     bm2 = st.session_state.get("benchmark2_select")
     benchmark_cos = [b for b in [bm1, bm2] if b and b != "（不选择）" and b != target_co]
-    bm_colors = ["#E24B4A", "#2EB872"]
     for bm_idx, bm_co in enumerate(benchmark_cos):
         if bm_co in dfp["公司"].values:
             bm_row = dfp[dfp["公司"] == bm_co]
             if not bm_row.empty:
                 bm_val = bm_row.iloc[0][col_plot]
+                # 查找对标公司所属分类的颜色
+                bm_cat = None
+                for cat_name, cat_cos in st.session_state.get("comp_cats", {}).items():
+                    if bm_co in cat_cos:
+                        bm_cat = cat_name
+                        break
+                bm_color = CAT_COLORS.get(bm_cat, "#2E7AD6") if bm_cat else "#2E7AD6"
                 fig.add_vline(
                     x=bm_val,
-                    line_color=bm_colors[bm_idx % len(bm_colors)],
+                    line_color=bm_color,
                     line_width=2,
                     annotation_text=f"  {bm_co}",
                     annotation_position="top"
