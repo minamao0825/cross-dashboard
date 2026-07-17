@@ -2338,7 +2338,7 @@ def capital_tier_boxplot(df, target_co=None, height=360):
         plot_bgcolor="white", paper_bgcolor="white",
         font=dict(family="SimHei, Microsoft YaHei, sans-serif"),
         yaxis_title="占实际资本比例",
-        yaxis=dict(gridcolor="#f5f5f5", zeroline=False, range=[-0.02, 1.05],
+        yaxis=dict(gridcolor="#f5f5f5", zeroline=False, range=[-0.02, 1.05], dtick=0.1,
                    tickformat=".0%", title_font=dict(size=13, family="SimHei"),  # Y轴标题13px
                    tickfont=dict(size=12, family="SimHei")),  # Y轴刻度10px
         xaxis=dict(tickmode="array", tickvals=list(range(len(tiers))),
@@ -2372,9 +2372,8 @@ def mc_composition_boxplot(df, indicators, denominator_col, target_co=None, heig
 
     fig = go.Figure()
 
-    # 固定Y轴范围
+    # 固定Y轴下限
     Y_MIN = -0.6
-    Y_MAX = 1.0
 
     BOX_W = 0.35
     TICK_LEN = 0.08
@@ -2412,6 +2411,15 @@ def mc_composition_boxplot(df, indicators, denominator_col, target_co=None, heig
     n_stats = len(stats_list)
     if n_stats == 0:
         return None
+
+    # Y轴上限根据数据范围自适应，避免数据集中在底部而Y轴刻度太大
+    data_max = max((s["max"] for s in stats_list), default=1.0)
+    if data_max < 0.5:
+        Y_MAX = round((data_max + 0.02) * 20) / 20  # 2% 步长向上取整
+    elif data_max < 0.8:
+        Y_MAX = round((data_max + 0.05) * 10) / 10  # 10% 步长向上取整
+    else:
+        Y_MAX = max(1.05, round((data_max + 0.05) * 10) / 10)
 
     for i, s in enumerate(stats_list):
         x_center = i
@@ -2594,6 +2602,8 @@ def mc_composition_boxplot(df, indicators, denominator_col, target_co=None, heig
             title_font=dict(size=13, family="SimHei"),
             tickfont=dict(size=12, family="SimHei"),  # Y轴刻度10px
             range=[Y_MIN, Y_MAX],
+            # Y轴刻度间距：根据Y_MAX动态调整
+            dtick=0.02 if Y_MAX <= 0.2 else (0.05 if Y_MAX <= 0.5 else (0.1 if Y_MAX <= 1.0 else 0.2)),
         ),
         xaxis=dict(
             tickmode="array",
