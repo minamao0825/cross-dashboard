@@ -1630,7 +1630,8 @@ def render_page_03(standalone=True):
                 df, "非寿险业务保险风险最低资本合计/认可负债",
                 "保险风险（非寿）/认可负债率",
                 height=360, target_co=target_co,
-                group_by_category=True, y_min=0, y_max=0.01, pct_display=True
+                group_by_category=True, y_min=0, y_max=0.01, pct_display=True,
+                dtick=0.002, tickformat_override=".1%"
             )
             if fig_nonlife_stress:
                 st.plotly_chart(fig_nonlife_stress, use_container_width=True)
@@ -1767,7 +1768,7 @@ def render_page_04(standalone=True):
 
 
 
-def boxplot_with_annotations(df, indicator, yaxis_title, height=360, target_co=None, y_multiplier=1.0, group_by_category=False, y_min=0, y_max=None, pct_display=False, dtick=None):
+def boxplot_with_annotations(df, indicator, yaxis_title, height=360, target_co=None, y_multiplier=1.0, group_by_category=False, y_min=0, y_max=None, pct_display=False, dtick=None, tickformat_override=None):
     """
     画箱型图（完全自定义绘制，参照参考图风格）
     - 使用 add_shape + add_annotation 手动绘制
@@ -1991,10 +1992,11 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=360, target_co=N
             zeroline=False,
             title_font=dict(size=13, family="SimHei"),
             tickfont=dict(size=12, family="SimHei"),
-            tickformat=".0%" if pct_display or (y_multiplier == 1.0 and vals.max() < 2) else "",
+            tickformat=tickformat_override if tickformat_override else (".0%" if pct_display or (y_multiplier == 1.0 and vals.max() < 2) else ""),
         )
         if y_max is not None:
             yaxis_cfg["range"] = [y_min, y_max]
+            yaxis_cfg["autorange"] = False
             # 显式设置 dtick，防止小范围百分比刻度出现重复标签
             if dtick is not None:
                 yaxis_cfg["dtick"] = dtick
@@ -2145,10 +2147,11 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=360, target_co=N
             zeroline=False,
             title_font=dict(size=13, family="SimHei"),
             tickfont=dict(size=12, family="SimHei"),
-            tickformat=".0%" if pct_display else "",
+            tickformat=tickformat_override if tickformat_override else (".0%" if pct_display else ""),
         )
         if y_max is not None:
             yaxis_cfg["range"] = [y_min, y_max]
+            yaxis_cfg["autorange"] = False
             # 显式设置 dtick，防止小范围百分比刻度出现重复标签
             if dtick is not None:
                 yaxis_cfg["dtick"] = dtick
