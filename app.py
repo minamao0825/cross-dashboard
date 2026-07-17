@@ -1904,6 +1904,7 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=360, target_co=N
                     showarrow=False,
                     yshift=yshift_mx,
                     font=dict(size=10, color="#3C4858", family="SimHei"),
+                    cliponaxis=False,
                 )
 
             # 最小值（下 whisker 末端）— 如果小于 y_min 则在边界处显示
@@ -1918,6 +1919,7 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=360, target_co=N
                     showarrow=False,
                     yshift=yshift_mn,
                     font=dict(size=10, color="#3C4858", family="SimHei"),
+                    cliponaxis=False,
                 )
 
         # ---------- 目标公司高亮 ----------
@@ -1948,6 +1950,7 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=360, target_co=N
                         textfont=dict(size=10, color="#00BFFF", family="SimHei"),
                         showlegend=False,
                         hoverinfo="skip",
+                        cliponaxis=False,
                     ))
 
         # ---------- 对标公司高亮 ----------
@@ -1981,6 +1984,7 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=360, target_co=N
                         textfont=dict(size=10, color=bm_color, family="SimHei"),
                         showlegend=False,
                         hoverinfo="skip",
+                        cliponaxis=False,
                     ))
 
         # ---------- 布局 ----------
@@ -2013,7 +2017,7 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=360, target_co=N
 
         fig.update_layout(
             height=height,
-            margin=dict(l=0, r=50, t=8, b=18),
+            margin=dict(l=0, r=50, t=35, b=25),
             plot_bgcolor="white",
             paper_bgcolor="white",
             font=dict(family="SimHei, Microsoft YaHei, sans-serif"),
@@ -2077,14 +2081,14 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=360, target_co=N
             else:
                 yshift_mx = 10
             fig.add_annotation(x=x_center, y=display_mx, text=f"{co_names.iloc[int(vals.idxmax())]} {lbl_mx}",
-                               showarrow=False, yshift=yshift_mx, font=dict(size=10, color=color, family="SimHei"))
+                               showarrow=False, yshift=yshift_mx, font=dict(size=10, color=color, family="SimHei"), cliponaxis=False)
         if mn < q1_v:
             display_mn = mn if (mn >= y_min) else y_min
             # 标注显示真实值，位置在边界处
             lbl_mn = f"{mn*100:.1f}%" if pct_display else f"{mn:.1f}%"
             yshift_mn = -10 if (mn >= y_min) else -5
             fig.add_annotation(x=x_center, y=display_mn, text=f"{co_names.iloc[int(vals.idxmin())]} {lbl_mn}",
-                               showarrow=False, yshift=yshift_mn, font=dict(size=10, color=color, family="SimHei"))
+                               showarrow=False, yshift=yshift_mn, font=dict(size=10, color=color, family="SimHei"), cliponaxis=False)
 
         # 目标公司高亮（超出范围时在边界处显示）
         if target_co and len(target_co) > 0:
@@ -2103,7 +2107,7 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=360, target_co=N
                     text=[f"{target_co} {lbl_t}"],
                     textposition=_tp,
                     textfont=dict(size=11, color="#185FA5", family="SimHei"),
-                    showlegend=False, hoverinfo="skip",
+                    showlegend=False, hoverinfo="skip", cliponaxis=False,
                 ))
 
         # 对标公司高亮
@@ -2135,7 +2139,7 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=360, target_co=N
                     text=[f"{bm_co} {lbl_bm}"],
                     textposition=_tp_bm,
                     textfont=dict(size=11, color=bm_color, family="SimHei"),
-                    showlegend=False, hoverinfo="skip",
+                    showlegend=False, hoverinfo="skip", cliponaxis=False,
                 ))
 
         yaxis_cfg = dict(
@@ -2167,7 +2171,7 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=360, target_co=N
 
         fig.update_layout(
             height=height,
-            margin=dict(l=0, r=50, t=8, b=18),
+            margin=dict(l=0, r=50, t=35, b=25),
             plot_bgcolor="white",
             paper_bgcolor="white",
             font=dict(family="SimHei, Microsoft YaHei, sans-serif"),
@@ -2266,15 +2270,17 @@ def capital_tier_boxplot(df, target_co=None, height=360):
         if mx > q3:
             max_idx = int(sr.idxmax())
             max_co = str(df.loc[max_idx, "公司"])
+            # 智能偏移：接近上限1.05时向下，否则向上
+            yshift_mx = -12 if mx >= 1.05 * 0.92 else 10
             fig.add_annotation(x=x_center, y=mx, text=f"{max_co} {mx*100:.0f}%",
-                               showarrow=False, yshift=10, font=dict(size=10, color=color, family="SimHei"))
+                               showarrow=False, yshift=yshift_mx, font=dict(size=10, color=color, family="SimHei"), cliponaxis=False)
 
         # min 标注（如果小于Q1且>=0）
         if mn < q1 and mn >= 0:
             min_idx = int(sr.idxmin())
             min_co = str(df.loc[min_idx, "公司"])
             fig.add_annotation(x=x_center, y=mn, text=f"{min_co} {mn*100:.0f}%",
-                               showarrow=False, yshift=-10, font=dict(size=10, color=color, family="SimHei"))
+                               showarrow=False, yshift=-10, font=dict(size=10, color=color, family="SimHei"), cliponaxis=False)
 
         # 图例 trace
         fig.add_trace(go.Scatter(x=[None], y=[None], mode="markers",
@@ -2296,7 +2302,7 @@ def capital_tier_boxplot(df, target_co=None, height=360):
                     text=[f"{target_co} {t_val*100:.0f}%"],
                     textposition=_tp,
                     textfont=dict(size=10, color="#00BFFF", family="SimHei"),
-                    showlegend=False, hoverinfo="skip",
+                    showlegend=False, hoverinfo="skip", cliponaxis=False,
                 ))
 
         # 对标公司高亮
@@ -2325,12 +2331,12 @@ def capital_tier_boxplot(df, target_co=None, height=360):
                     text=[f"{bm_co} {bm_val*100:.0f}%"],
                     textposition=_tp_bm,
                     textfont=dict(size=10, color=bm_color, family="SimHei"),
-                    showlegend=False, hoverinfo="skip",
+                    showlegend=False, hoverinfo="skip", cliponaxis=False,
                 ))
 
     fig.update_layout(
         height=height,
-        margin=dict(l=0, r=40, t=8, b=18),
+        margin=dict(l=0, r=40, t=35, b=25),
         plot_bgcolor="white", paper_bgcolor="white",
         font=dict(family="SimHei, Microsoft YaHei, sans-serif"),
         yaxis_title="占实际资本比例",
@@ -2482,6 +2488,7 @@ def mc_composition_boxplot(df, indicators, denominator_col, target_co=None, heig
             showarrow=False,
             yshift=yshift_mx,
             font=dict(size=10, color=c, family="SimHei"),
+            cliponaxis=False,
         )
 
         # ---- 6) min 标注（下 whisker 末端）----
@@ -2493,6 +2500,7 @@ def mc_composition_boxplot(df, indicators, denominator_col, target_co=None, heig
             showarrow=False,
             yshift=yshift_mn,
             font=dict(size=10, color=c, family="SimHei"),
+            cliponaxis=False,
         )
 
         # ---- 7) 图例 trace ----
@@ -2530,6 +2538,7 @@ def mc_composition_boxplot(df, indicators, denominator_col, target_co=None, heig
                                     textfont=dict(size=10, color="#00BFFF", family="SimHei"),
                                     showlegend=False,
                                     hoverinfo="skip",
+                                    cliponaxis=False,
                                 ))
 
     # ---- 对标公司高亮 ----
@@ -2573,11 +2582,12 @@ def mc_composition_boxplot(df, indicators, denominator_col, target_co=None, heig
                                     textfont=dict(size=10, color=bm_color, family="SimHei"),
                                     showlegend=False,
                                     hoverinfo="skip",
+                                    cliponaxis=False,
                                 ))
 
     fig.update_layout(
         height=height,
-        margin=dict(l=0, r=40, t=8, b=18),
+        margin=dict(l=0, r=40, t=35, b=25),
         plot_bgcolor="white",
         paper_bgcolor="white",
         font=dict(family="SimHei, Microsoft YaHei, sans-serif"),
