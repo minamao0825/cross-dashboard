@@ -2338,7 +2338,7 @@ def capital_tier_boxplot(df, target_co=None, height=360):
         plot_bgcolor="white", paper_bgcolor="white",
         font=dict(family="SimHei, Microsoft YaHei, sans-serif"),
         yaxis_title="占实际资本比例",
-        yaxis=dict(gridcolor="#f5f5f5", zeroline=False, range=[-0.02, 1.05], dtick=0.1,
+        yaxis=dict(gridcolor="#f5f5f5", zeroline=False, autorange=False, range=[-0.02, 1.05], dtick=0.1,
                    tickformat=".0%", title_font=dict(size=13, family="SimHei"),  # Y轴标题13px
                    tickfont=dict(size=12, family="SimHei")),  # Y轴刻度10px
         xaxis=dict(tickmode="array", tickvals=list(range(len(tiers))),
@@ -2599,6 +2599,7 @@ def mc_composition_boxplot(df, indicators, denominator_col, target_co=None, heig
             tickformat=".0%",
             gridcolor="#e0e0e0",
             zeroline=False,
+            autorange=False,
             title_font=dict(size=13, family="SimHei"),
             tickfont=dict(size=12, family="SimHei"),  # Y轴刻度10px
             range=[Y_MIN, Y_MAX],
