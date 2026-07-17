@@ -1904,7 +1904,6 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=360, target_co=N
                     showarrow=False,
                     yshift=yshift_mx,
                     font=dict(size=10, color="#3C4858", family="SimHei"),
-                    cliponaxis=False,
                 )
 
             # 最小值（下 whisker 末端）— 如果小于 y_min 则在边界处显示
@@ -1919,7 +1918,6 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=360, target_co=N
                     showarrow=False,
                     yshift=yshift_mn,
                     font=dict(size=10, color="#3C4858", family="SimHei"),
-                    cliponaxis=False,
                 )
 
         # ---------- 目标公司高亮 ----------
@@ -2081,14 +2079,14 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=360, target_co=N
             else:
                 yshift_mx = 10
             fig.add_annotation(x=x_center, y=display_mx, text=f"{co_names.iloc[int(vals.idxmax())]} {lbl_mx}",
-                               showarrow=False, yshift=yshift_mx, font=dict(size=10, color=color, family="SimHei"), cliponaxis=False)
+                               showarrow=False, yshift=yshift_mx, font=dict(size=10, color=color, family="SimHei"))
         if mn < q1_v:
             display_mn = mn if (mn >= y_min) else y_min
             # 标注显示真实值，位置在边界处
             lbl_mn = f"{mn*100:.1f}%" if pct_display else f"{mn:.1f}%"
             yshift_mn = -10 if (mn >= y_min) else -5
             fig.add_annotation(x=x_center, y=display_mn, text=f"{co_names.iloc[int(vals.idxmin())]} {lbl_mn}",
-                               showarrow=False, yshift=yshift_mn, font=dict(size=10, color=color, family="SimHei"), cliponaxis=False)
+                               showarrow=False, yshift=yshift_mn, font=dict(size=10, color=color, family="SimHei"))
 
         # 目标公司高亮（超出范围时在边界处显示）
         if target_co and len(target_co) > 0:
@@ -2273,14 +2271,14 @@ def capital_tier_boxplot(df, target_co=None, height=360):
             # 智能偏移：接近上限1.05时向下，否则向上
             yshift_mx = -12 if mx >= 1.05 * 0.92 else 10
             fig.add_annotation(x=x_center, y=mx, text=f"{max_co} {mx*100:.0f}%",
-                               showarrow=False, yshift=yshift_mx, font=dict(size=10, color=color, family="SimHei"), cliponaxis=False)
+                               showarrow=False, yshift=yshift_mx, font=dict(size=10, color=color, family="SimHei"))
 
         # min 标注（如果小于Q1且>=0）
         if mn < q1 and mn >= 0:
             min_idx = int(sr.idxmin())
             min_co = str(df.loc[min_idx, "公司"])
             fig.add_annotation(x=x_center, y=mn, text=f"{min_co} {mn*100:.0f}%",
-                               showarrow=False, yshift=-10, font=dict(size=10, color=color, family="SimHei"), cliponaxis=False)
+                               showarrow=False, yshift=-10, font=dict(size=10, color=color, family="SimHei"))
 
         # 图例 trace
         fig.add_trace(go.Scatter(x=[None], y=[None], mode="markers",
@@ -2488,7 +2486,6 @@ def mc_composition_boxplot(df, indicators, denominator_col, target_co=None, heig
             showarrow=False,
             yshift=yshift_mx,
             font=dict(size=10, color=c, family="SimHei"),
-            cliponaxis=False,
         )
 
         # ---- 6) min 标注（下 whisker 末端）----
@@ -2500,7 +2497,6 @@ def mc_composition_boxplot(df, indicators, denominator_col, target_co=None, heig
             showarrow=False,
             yshift=yshift_mn,
             font=dict(size=10, color=c, family="SimHei"),
-            cliponaxis=False,
         )
 
         # ---- 7) 图例 trace ----
