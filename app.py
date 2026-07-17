@@ -2995,12 +2995,18 @@ with st.sidebar:
     
     # 显示已上传文件信息
     if st.session_state.uploaded_file_name is not None:
-        st.info(f"📄 当前文件：{st.session_state.uploaded_file_name}")
+        st.markdown(
+            f'<div style="background-color:#f0f9ff;border-left:3px solid #0d5fa5;padding:4px 10px;border-radius:6px;margin:3px 0;font-size:0.78rem;line-height:1.4;color:#333;">📄 当前文件：<strong>{st.session_state.uploaded_file_name}</strong></div>',
+            unsafe_allow_html=True,
+        )
         if len(st.session_state.available_quarters) > 0:
             st.caption(f"可用季度：{', '.join(st.session_state.available_quarters)}")
         # 显示融资信息文件状态
         if st.session_state.financing_file_name is not None:
-            st.success(f"📄 融资信息：{st.session_state.financing_file_name}")
+            st.markdown(
+                f'<div style="background-color:#f6fff6;border-left:3px solid #2eb872;padding:4px 10px;border-radius:6px;margin:3px 0;font-size:0.78rem;line-height:1.4;color:#333;">📄 融资信息：<strong>{st.session_state.financing_file_name}</strong></div>',
+                unsafe_allow_html=True,
+            )
         else:
             st.caption("💡 未上传重大融资信息 → 04页面将跳过")
         st.markdown('<hr style="margin:4px 0;border:none;border-top:1px solid #e8e8e8;">', unsafe_allow_html=True)
