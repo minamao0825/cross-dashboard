@@ -1936,13 +1936,15 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=360, target_co=N
                     display_y = min(t_val, y_max) if y_max is not None else t_val
                     lbl_t = f"{t_val*100:.1f}%" if pct_display else f"{t_val:.1f}%"
                     # 主星星
+                    # 智能标注位置：接近Y轴上限时文字向下，远离时向上
+                    _tp = "bottom center" if (y_max is not None and display_y >= y_max * 0.92) else "top center"
                     fig.add_trace(go.Scatter(
                         x=[t_idx],
                         y=[display_y],
                         mode="markers+text",
                         marker=dict(size=16, color="#00BFFF", line=dict(color="#fff", width=1.5), symbol="star"),
                         text=[f"{target_co} {lbl_t}"],
-                        textposition="top center",
+                        textposition=_tp,
                         textfont=dict(size=10, color="#00BFFF", family="SimHei"),
                         showlegend=False,
                         hoverinfo="skip",
@@ -1968,12 +1970,14 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=360, target_co=N
                     bm_symbol = bm_symbols[bm_idx % len(bm_symbols)]
                     display_y = min(bm_val, y_max) if y_max is not None else bm_val
                     lbl_bm = f"{bm_val*100:.1f}%" if pct_display else f"{bm_val:.1f}%"
+                    # 智能标注位置：接近Y轴上限时文字向下
+                    _tp_bm = "bottom center" if (y_max is not None and display_y >= y_max * 0.92) else "top center"
                     fig.add_trace(go.Scatter(
                         x=[bm_x], y=[display_y],
                         mode="markers+text",
                         marker=dict(size=16, color=bm_color, line=dict(color="#fff", width=1.5), symbol=bm_symbol),
                         text=[f"{bm_co} {lbl_bm}"],
-                        textposition="top center",
+                        textposition=_tp_bm,
                         textfont=dict(size=10, color=bm_color, family="SimHei"),
                         showlegend=False,
                         hoverinfo="skip",
@@ -2065,7 +2069,13 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=360, target_co=N
             display_mx = mx if (y_max is None or mx <= y_max) else y_max
             # 标注显示真实值，位置在边界处
             lbl_mx = f"{mx*100:.1f}%" if pct_display else f"{mx:.1f}%"
-            yshift_mx = 10 if (y_max is None or mx <= y_max) else 5
+            # 智能偏移：接近上限时向下，远离时向上
+            if y_max is not None and display_mx >= y_max * 0.92:
+                yshift_mx = -12
+            elif y_max is not None and mx > y_max:
+                yshift_mx = 5
+            else:
+                yshift_mx = 10
             fig.add_annotation(x=x_center, y=display_mx, text=f"{co_names.iloc[int(vals.idxmax())]} {lbl_mx}",
                                showarrow=False, yshift=yshift_mx, font=dict(size=10, color=color, family="SimHei"))
         if mn < q1_v:
@@ -2084,12 +2094,14 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=360, target_co=N
                 display_y = t_val if (y_max is None or t_val <= y_max) else y_max
                 display_y = display_y if display_y >= y_min else y_min
                 lbl_t = f"{t_val*100:.1f}%" if pct_display else f"{t_val:.1f}%"
+                # 智能标注位置：接近Y轴上限时文字向下
+                _tp = "bottom center" if (y_max is not None and display_y >= y_max * 0.92) else "top center"
                 fig.add_trace(go.Scatter(
                     x=[x_center], y=[display_y],
                     mode="markers+text",
                     marker=dict(size=16, color="#185FA5", line=dict(color="#fff", width=1.5), symbol="star"),
                     text=[f"{target_co} {lbl_t}"],
-                    textposition="top center",
+                    textposition=_tp,
                     textfont=dict(size=11, color="#185FA5", family="SimHei"),
                     showlegend=False, hoverinfo="skip",
                 ))
@@ -2114,12 +2126,14 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=360, target_co=N
                         break
                 bm_color = CAT_COLORS.get(bm_cat, "#2E7AD6") if bm_cat else "#2E7AD6"
                 bm_symbol = bm_symbols[bm_idx % len(bm_symbols)]
+                # 智能标注位置：接近Y轴上限时文字向下
+                _tp_bm = "bottom center" if (y_max is not None and display_y >= y_max * 0.92) else "top center"
                 fig.add_trace(go.Scatter(
                     x=[x_center], y=[display_y],
                     mode="markers+text",
                     marker=dict(size=16, color=bm_color, line=dict(color="#fff", width=1.5), symbol=bm_symbol),
                     text=[f"{bm_co} {lbl_bm}"],
-                    textposition="top center",
+                    textposition=_tp_bm,
                     textfont=dict(size=11, color=bm_color, family="SimHei"),
                     showlegend=False, hoverinfo="skip",
                 ))
@@ -2273,12 +2287,14 @@ def capital_tier_boxplot(df, target_co=None, height=360):
             if t_mask.any():
                 t_val = float(df.loc[t_mask, col].iloc[0])
                 # 主星星
+                # 智能标注位置：接近Y轴上限1.05时文字向下
+                _tp = "bottom center" if t_val >= 1.05 * 0.92 else "top center"
                 fig.add_trace(go.Scatter(
                     x=[x_center], y=[t_val],
                     mode="markers+text",
                     marker=dict(size=16, color="#00BFFF", line=dict(color="#fff", width=1.5), symbol="star"),
                     text=[f"{target_co} {t_val*100:.0f}%"],
-                    textposition="top center",
+                    textposition=_tp,
                     textfont=dict(size=10, color="#00BFFF", family="SimHei"),
                     showlegend=False, hoverinfo="skip",
                 ))
@@ -2300,12 +2316,14 @@ def capital_tier_boxplot(df, target_co=None, height=360):
                         break
                 bm_color = CAT_COLORS.get(bm_cat, "#2E7AD6") if bm_cat else "#2E7AD6"
                 bm_symbol = bm_symbols[bm_idx % len(bm_symbols)]
+                # 智能标注位置：接近Y轴上限1.05时文字向下
+                _tp_bm = "bottom center" if bm_val >= 1.05 * 0.92 else "top center"
                 fig.add_trace(go.Scatter(
                     x=[x_center], y=[bm_val],
                     mode="markers+text",
                     marker=dict(size=16, color=bm_color, line=dict(color="#fff", width=1.5), symbol=bm_symbol),
                     text=[f"{bm_co} {bm_val*100:.0f}%"],
-                    textposition="top center",
+                    textposition=_tp_bm,
                     textfont=dict(size=10, color=bm_color, family="SimHei"),
                     showlegend=False, hoverinfo="skip",
                 ))
@@ -2451,7 +2469,13 @@ def mc_composition_boxplot(df, indicators, denominator_col, target_co=None, heig
 
         # ---- 5) max 标注（上 whisker 末端）----
         display_mx = mx if mx <= Y_MAX else Y_MAX
-        yshift_mx = 10 if mx <= Y_MAX else 5
+        # 智能偏移：接近上限时向下，超出时微下，正常时向上
+        if display_mx >= Y_MAX * 0.92:
+            yshift_mx = -12
+        elif mx > Y_MAX:
+            yshift_mx = 5
+        else:
+            yshift_mx = 10
         fig.add_annotation(
             x=x_center, y=display_mx,
             text=f"{s['max_co']} {mx*100:.1f}%",
@@ -2494,13 +2518,15 @@ def mc_composition_boxplot(df, indicators, denominator_col, target_co=None, heig
                             if pd.notna(t_val):
                                 display_y = t_val if t_val <= Y_MAX else Y_MAX
                                 display_y = display_y if display_y >= Y_MIN else Y_MIN
+                                # 智能标注位置：接近Y轴上限时文字向下
+                                _tp = "bottom center" if display_y >= Y_MAX * 0.92 else "top center"
                                 fig.add_trace(go.Scatter(
                                     x=[i],
                                     y=[display_y],
                                     mode="markers+text",
                                     marker=dict(size=16, color="#00BFFF", line=dict(color="#fff", width=1.5), symbol="star"),
                                     text=[f"{target_co} {t_val*100:.1f}%"],
-                                    textposition="top center",
+                                    textposition=_tp,
                                     textfont=dict(size=10, color="#00BFFF", family="SimHei"),
                                     showlegend=False,
                                     hoverinfo="skip",
@@ -2535,13 +2561,15 @@ def mc_composition_boxplot(df, indicators, denominator_col, target_co=None, heig
                                 display_y = display_y if display_y >= Y_MIN else Y_MIN
                                 bm_color = bm_cat_colors.get(bm_co, "#2E7AD6")
                                 bm_symbol = bm_symbols[bm_idx % len(bm_symbols)]
+                                # 智能标注位置：接近Y轴上限时文字向下
+                                _tp_bm = "bottom center" if display_y >= Y_MAX * 0.92 else "top center"
                                 fig.add_trace(go.Scatter(
                                     x=[i],
                                     y=[display_y],
                                     mode="markers+text",
                                     marker=dict(size=16, color=bm_color, line=dict(color="#fff", width=1.5), symbol=bm_symbol),
                                     text=[f"{bm_co} {bm_val*100:.1f}%"],
-                                    textposition="top center",
+                                    textposition=_tp_bm,
                                     textfont=dict(size=10, color=bm_color, family="SimHei"),
                                     showlegend=False,
                                     hoverinfo="skip",
