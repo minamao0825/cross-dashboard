@@ -2008,12 +2008,12 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=360, target_co=N
                     yaxis_cfg["dtick"] = 0.02
                 elif y_span <= 0.5:
                     yaxis_cfg["dtick"] = 0.05
-                elif y_span <= 1.0:
+                elif y_span <= 2.0:
                     yaxis_cfg["dtick"] = 0.1
                 elif y_span <= 5.0:
-                    yaxis_cfg["dtick"] = 0.5
+                    yaxis_cfg["dtick"] = 0.2
                 else:
-                    yaxis_cfg["dtick"] = 2.0
+                    yaxis_cfg["dtick"] = 0.5
 
         fig.update_layout(
             height=height,
@@ -2163,12 +2163,12 @@ def boxplot_with_annotations(df, indicator, yaxis_title, height=360, target_co=N
                     yaxis_cfg["dtick"] = 0.02
                 elif y_span <= 0.5:
                     yaxis_cfg["dtick"] = 0.05
-                elif y_span <= 1.0:
+                elif y_span <= 2.0:
                     yaxis_cfg["dtick"] = 0.1
                 elif y_span <= 5.0:
-                    yaxis_cfg["dtick"] = 0.5
+                    yaxis_cfg["dtick"] = 0.2
                 else:
-                    yaxis_cfg["dtick"] = 2.0
+                    yaxis_cfg["dtick"] = 0.5
 
         fig.update_layout(
             height=height,
