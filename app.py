@@ -107,7 +107,22 @@ div[data-test-id="stRadio"] label[data-selected="true"] {
 }
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
-[data-test-id="stSidebar"] { min-width: 300px !important; }
+[data-test-id="stSidebar"] { min-width: 260px !important; }
+/* ===== 侧边栏紧凑布局 ===== */
+[data-testid="stSidebar"] > div:first-child { padding: 10px 14px !important; }
+[data-testid="stSidebar"] h2 { font-size: 1.2rem !important; margin-bottom: 4px !important; line-height: 1.4 !important; }
+[data-testid="stSidebar"] h4 { font-size: 0.9rem !important; margin-top: 4px !important; margin-bottom: 2px !important; }
+[data-testid="stSidebar"] .stCaption { font-size: 0.72rem !important; }
+[data-testid="stSidebar"] hr { margin-top: 4px !important; margin-bottom: 4px !important; }
+[data-testid="stSidebar"] .stDivider { margin-top: 4px !important; margin-bottom: 4px !important; }
+[data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div { gap: 2px !important; }
+[data-testid="stSidebar"] .stSelectbox { margin-bottom: 2px !important; }
+[data-testid="stSidebar"] .stSelectbox label { font-size: 0.85rem !important; }
+[data-testid="stSidebar"] .stFileUploader { padding-top: 4px !important; padding-bottom: 4px !important; }
+[data-testid="stSidebar"] .stFileUploader label { font-size: 0.85rem !important; }
+[data-testid="stSidebar"] .stInfo { padding: 4px 10px !important; font-size: 0.8rem !important; }
+[data-testid="stSidebar"] .stSuccess { padding: 4px 10px !important; font-size: 0.8rem !important; }
+[data-testid="stSidebar"] .stButton { margin-top: 2px !important; margin-bottom: 2px !important; }
 section[data-test-id="stSidebar"] .stMultiSelect [data-baseweb="tag"] { font-size: 0.7rem; }
 
 /* ========== 打印样式 ========== */
@@ -2906,8 +2921,8 @@ if df_all is not None:
 # ===========================================================
 with st.sidebar:
     st.markdown("## 寿研数智 偿付能力季报分享平台")
-    st.caption("偿付能力信息可视化系统  v6.0 · PDF参照版")
-    st.divider()
+    st.caption("偿付能力信息可视化系统  v10.5 · PDF参照版")
+    st.markdown('<hr style="margin:4px 0;border:none;border-top:1px solid #e8e8e8;">', unsafe_allow_html=True)
     
     # 数据上传区域
     st.markdown("#### 📁 数据包上传")
@@ -2953,7 +2968,7 @@ with st.sidebar:
     
     # ---- 重大融资信息文件上传（可选）----
     if st.session_state.uploaded_file_name is not None:
-        st.divider()
+        st.markdown('<hr style="margin:4px 0;border:none;border-top:1px solid #e8e8e8;">', unsafe_allow_html=True)
         st.markdown("#### 📁 重大融资信息（可选）")
         financing_file = st.file_uploader(
             "上传 重大融资信息.xlsx",
@@ -2988,18 +3003,17 @@ with st.sidebar:
             st.success(f"📄 融资信息：{st.session_state.financing_file_name}")
         else:
             st.caption("💡 未上传重大融资信息 → 04页面将跳过")
-        st.divider()
+        st.markdown('<hr style="margin:4px 0;border:none;border-top:1px solid #e8e8e8;">', unsafe_allow_html=True)
     
     # 用户信息
-    st.markdown(f"**当前用户：** {st.session_state.username}")
     role_label = "🔑 管理员" if st.session_state.user_role == "admin" else "👁 普通用户"
-    st.caption(role_label)
+    st.caption(f"{st.session_state.username}  {role_label}")
     if st.button("退出登录", use_container_width=True):
         st.session_state.logged_in = False
         st.session_state.username  = ""
         st.session_state.user_role  = None
         st.rerun()
-    st.divider()
+    st.markdown('<hr style="margin:4px 0;border:none;border-top:1px solid #e8e8e8;">', unsafe_allow_html=True)
 
     # 数据期间（从上传文件的Sheet列表中选择）
     if st.session_state.uploaded_file_name is not None and len(st.session_state.available_quarters) > 0:
@@ -3016,7 +3030,7 @@ with st.sidebar:
     else:
         q_label = st.text_input("数据期间", value=DEFAULT_Q, disabled=True)
         st.caption("⚠️ 请先上传数据包")
-    st.divider()
+    st.markdown('<hr style="margin:4px 0;border:none;border-top:1px solid #e8e8e8;">', unsafe_allow_html=True)
 
     # 目标公司
     st.markdown("#### 🎯 目标公司")
@@ -3050,7 +3064,7 @@ with st.sidebar:
         benchmark1_co = None
         benchmark2_co = None
 
-    st.divider()
+    st.markdown('<hr style="margin:4px 0;border:none;border-top:1px solid #e8e8e8;">', unsafe_allow_html=True)
 
     # 导航
     st.markdown("#### 📄 页面导航")
